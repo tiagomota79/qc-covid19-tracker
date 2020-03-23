@@ -17,12 +17,13 @@ const Cases = require('./src/models/Cases');
 console.log(pageURL);
 console.log(mongoURI);
 
-//Connect to MongoDB
+//Connect to MongoDB with Mongoose
 // mongoose
 //   .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 //   .then(() => console.log('MongoDb connected'))
 //   .catch(e => console.log(e));
 
+//Connect to MongoDB
 const MongoClient = require('mongodb').MongoClient;
 const uri = mongoURI;
 const client = new MongoClient(uri, {
@@ -66,5 +67,7 @@ app.get('/history', (req, res) => {
   // res.json(history);
   res.json(initialData);
 });
+
+app.get('/mongo', (req, res) => {});
 
 app.listen(3000);
