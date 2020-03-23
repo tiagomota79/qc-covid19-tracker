@@ -1,47 +1,75 @@
-//Import and initiate libraries
+// Import and initiate libraries
 const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
-//Import internal data and components
+// Import internal data and components
 const scrape = require('./src/scraper');
 const data = require('./src/data');
 const initialData = require('./src/initialData.json');
-//Destructuring data from internal component
+// Destructuring data from internal component
 const { pageURL } = data;
 const { mongoURI } = data;
-//Import MongoDB Schema
+// Import MongoDB Schema
 const Cases = require('./src/models/Cases');
 
 console.log(pageURL);
 console.log(mongoURI);
 
-//Connect to MongoDB with Mongoose
+// Connect to MongoDB with Mongoose
 // mongoose
 //   .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
 //   .then(() => console.log('MongoDb connected'))
 //   .catch(e => console.log(e));
 
-//Connect to MongoDB
+// Connect to MongoDB
 const MongoClient = require('mongodb').MongoClient;
-const uri = mongoURI;
-const client = new MongoClient(uri, {
+const assert = require('assert');
+
+// Connection URL
+const url = mongoURI;
+
+// Database Name
+const dbName = 'qc-coronavirus-cases';
+
+// Create a new MongoClient
+const client = new MongoClient(url, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
-client.connect(err => {
-  const collection = client
-    .db('qc-coronavirus-cases')
-    .collection('total-cases-per-day');
-  // perform actions on the collection object
-  client.close();
-});
 
-//Initiate body parser
+// Use connect method to connect to the Server
+// client.connect(function(err) {
+//   assert.equal(null, err);
+//   console.log('Connected successfully to MongoDB server');
+
+//   const db = client.db(dbName);
+
+//   findDocuments(db, function() {
+//     client.close();
+//   });
+// });
+
+// MongoDB find all documents function
+const findDocuments = function(db, callback) {
+  // Get the documents collection
+  const collection = db.collection('total-cases-per-day');
+  // Find some documents
+  collection.find({}).toArray(function(err, docs) {
+    assert.equal(err, null);
+    const mongodata = docs;
+    console.log('Found the following records');
+    console.log(mongodata);
+    callback(docs);
+    return mongodata;
+  });
+};
+
+// Initiate body parser
 app.use(bodyParser.json());
 
-//Routes
+// Routes
 app.get('/', async (req, res) => {
   const data = await scrape(pageURL);
   const casesToday = data.total;
@@ -68,6 +96,21 @@ app.get('/history', (req, res) => {
   res.json(initialData);
 });
 
-app.get('/mongo', (req, res) => {});
+app.get('/mongo', (req, res) => {
+  const data = client.connect(function(err) {
+    assert.equal(null, err);
+    console.log(
+      'Connected successfully to MongoDB server on the /mongo endpoint'
+    );
+
+    const db = client.db(dbName);
+
+    findDocuments(db, function() {
+      client.close();
+    });
+  });
+  console.log(data);
+  res.send(`reading document inside MongoDB`);
+});
 
 app.listen(3000);
