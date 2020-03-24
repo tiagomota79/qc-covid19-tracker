@@ -58,11 +58,9 @@ const findDocuments = function(db, callback) {
   // Find some documents
   collection.find({}).toArray(function(err, docs) {
     assert.equal(err, null);
-    const mongodata = docs;
     console.log('Found the following records');
-    console.log(mongodata);
+    console.log(docs);
     callback(docs);
-    return mongodata;
   });
 };
 
@@ -97,20 +95,25 @@ app.get('/history', (req, res) => {
 });
 
 app.get('/mongo', (req, res) => {
-  const data = client.connect(function(err) {
+  client.connect(function(err) {
     assert.equal(null, err);
     console.log(
-      'Connected successfully to MongoDB server on the /mongo endpoint'
+      'Connected successfully to MongoDB server in the /mongo endpoint'
     );
 
     const db = client.db(dbName);
 
-    findDocuments(db, function() {
-      client.close();
+    // Get the documents collection
+    const collection = db.collection('total-cases-per-day');
+    // Find some documents
+    collection.find({}).toArray(function(err, docs) {
+      assert.equal(err, null);
+      console.log('Found the following records');
+      console.log(docs);
+      // callback(docs);
+      res.json(docs);
     });
   });
-  console.log(data);
-  res.send(`reading document inside MongoDB`);
 });
 
 app.listen(3000);
