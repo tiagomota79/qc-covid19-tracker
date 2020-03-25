@@ -30,6 +30,9 @@ const assert = require('assert');
 // Connection URL
 const url = mongoURI;
 
+// DB object to be used by MongoDB
+let db;
+
 // Database Name
 const dbName = 'qc-coronavirus-cases';
 
@@ -40,16 +43,16 @@ const client = new MongoClient(url, {
 });
 
 // Use connect method to connect to the Server
-// client.connect(function(err) {
-//   assert.equal(null, err);
-//   console.log('Connected successfully to MongoDB server');
+client.connect(function(err) {
+  assert.equal(null, err);
+  console.log('Connected successfully to MongoDB server');
 
-//   const db = client.db(dbName);
+  db = client.db(dbName);
 
-//   findDocuments(db, function() {
-//     client.close();
-//   });
-// });
+  // findDocuments(db, function() {
+  //   client.close();
+  // });
+});
 
 // MongoDB find all documents function
 const findDocuments = function(db, callback) {
@@ -73,7 +76,42 @@ app.get('/', async (req, res) => {
   const casesToday = data.total;
   const today = data.date;
   console.log('data received from scraper', data);
-  if (initialData[initialData.length - 1].date === today) {
+
+  // Get the documents collection
+  const collection = db.collection('total-cases-per-day');
+
+  const findDocuments = function(db, callback) {
+    // Find some documents
+    collection.find({}).toArray(function(err, docs) {
+      assert.equal(err, null);
+      console.log('Found the following records');
+      console.log(docs);
+      callback(docs);
+    });
+  };
+
+  // console.log('Documents in DB', findDocuments);
+
+  let lastDoc;
+
+  await collection
+    .find({})
+    .sort({ _id: -1 })
+    .limit(1)
+    .toArray(function(err, docs) {
+      assert.equal(err, null);
+      console.log('Found this document');
+      console.log(docs);
+      lastDoc = docs;
+    });
+
+  await console.log('Last document on DB', lastDoc);
+
+  // If today's date is equal to the date in the last element of the array, update the total value. If not, push the new total as a new object with today's date
+  if (
+    initialData[initialData.length - 1].date === today ||
+    initialData[initialData.length - 1].total === casesToday
+  ) {
     initialData[initialData.length - 1].total === casesToday;
   } else {
     initialData.push({ date: today, total: casesToday });
@@ -87,32 +125,34 @@ app.get('/', async (req, res) => {
   );
 });
 
-app.get('/history', (req, res) => {
-  // const history = await Cases.find({});
-  // console.log('Historical cases', history);
-  // res.json(history);
-  res.json(initialData);
+app.get('/lastdoc', (req, res) => {
+  // Get the documents collection
+  const collection = db.collection('total-cases-per-day');
+
+  // Get the last document from the collection
+  collection
+    .find({})
+    .sort({ _id: -1 })
+    .limit(1)
+    .toArray(function(err, doc) {
+      assert.equal(err, null);
+      console.log('Found this document');
+      console.log(doc);
+      res.send(JSON.stringify(doc));
+    });
 });
 
 app.get('/mongo', (req, res) => {
-  client.connect(function(err) {
-    assert.equal(null, err);
-    console.log(
-      'Connected successfully to MongoDB server in the /mongo endpoint'
-    );
-
-    const db = client.db(dbName);
-
-    // Get the documents collection
-    const collection = db.collection('total-cases-per-day');
-    // Find some documents
-    collection.find({}).toArray(function(err, docs) {
-      assert.equal(err, null);
-      console.log('Found the following records');
-      console.log(docs);
-      // callback(docs);
-      res.json(docs);
-    });
+  // Get the documents collection
+  const collection = db.collection('total-cases-per-day');
+  // Find some documents
+  collection.find({}).toArray(function(err, docs) {
+    assert.equal(err, null);
+    console.log('Found the following records');
+    console.log(docs);
+    // callback(docs);
+    // res.send(JSON.stringify(docs));
+    res.json(docs);
   });
 });
 

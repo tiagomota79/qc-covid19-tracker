@@ -57,31 +57,43 @@ async function scrape(url) {
   //   '//*[@id="c47903"]/div/div/div/table/tbody/tr[15]/td[2]/p'
   // );
 
-  //Get specific element from page using xPath
-  const [el] = await page.$x('//*[@id="c47903"]/div/div/div/table/tbody');
+  // const jsHandle = await page.evaluateHandle(() => {
+  //   const [el] = page.$x('//*[@id="c47903"]/div/div/div/table');
+  //   return el;
+  // });
+  // console.log('jsHandle', jsHandle); // JSHandle
 
-  //Get property from the selected webpage element, using textContent
-  const table = await el.getProperty('textContent');
-  //Convert the response to a json object
-  const tableJson = await table.jsonValue();
-  //Filter only the Total value
-  const filter = tableJson.substr(tableJson.indexOf('Total') + 5);
-  //Convert the string value into number
-  const total = await Number(filter);
-  //Gets today's date in YYYY-MM-DD format
+  // //Get specific element from page using xPath
+  // const [el] = await page.$x('//*[@id="c47903"]/div/div/div/table');
+
+  // // Get property from the selected webpage element, using textContent
+  // const table = await JSON.parse(
+  //   JSON.stringify(xPath)
+  // )._remoteObject.value.getProperty('textContent');
+  // console.log('table', table);
+  // // Convert the response to a json object
+  // const tableJson = await table.jsonValue();
+  // // Filter only the Total value
+  // const filter = tableJson.substr(tableJson.indexOf('Total') + 5);
+  // // Remove whitespace from number
+  // const noWhitespace = filter.trim();
+  // // Convert the string value into number
+  // const total = await Number(noWhitespace);
+
+  const total = await page.evaluate(() => {
+    const cellContents = document.querySelector(
+      '.contenttable tbody tr:last-of-type td:last-of-type'
+    ).textContent;
+    return Number(cellContents.replace(/\s/g, ''));
+  });
+
+  // Gets today's date in YYYY-MM-DD format
   const date = `${new Date().getFullYear()}-${new Date().getMonth() +
     1}-${new Date().getDate()}`;
 
   console.log(total);
 
-  console.log('dataObj inside scraper', { date, total }); //Check the object created with today's date and the number scrapped from the website
-
-  //If today's date is equal to the date in the last element of the array, update the total value. If not, push the new total as a new object with today's date
-  // if (data[data.length - 1].date === date) {
-  //   data[data.length - 1].total === total;
-  // } else {
-  //   data.push({ date, total });
-  // }
+  // console.log('dataObj inside scraper', { date, total }); //Check the object created with today's date and the number scrapped from the website
 
   // console.log('Dataset situation after page loads', data); //Check the pushing of the new object into the initial dataset
 
@@ -98,14 +110,14 @@ async function scrape(url) {
 
   //Close Puppeteer browser after scraping data
   await browser.close();
-  //Return data object
+  // Return data object
   return dataObj;
 }
 
-//Function executed with the website from QC government. This will be integrated into another file when the app is finished.
-// scrape(
-//   'https://www.quebec.ca/sante/problemes-de-sante/a-z/coronavirus-2019/situation-coronavirus-quebec/'
-// );
+// Function executed with the website from QC government. This will be integrated into another file when the app is finished.
+scrape(
+  'https://www.quebec.ca/sante/problemes-de-sante/a-z/coronavirus-2019/situation-coronavirus-quebec/'
+);
 
 //Export the function to be used in other files.
 module.exports = scrape;
