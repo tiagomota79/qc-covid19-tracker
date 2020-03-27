@@ -17,12 +17,6 @@ const Cases = require('./src/models/Cases');
 console.log(pageURL);
 console.log(mongoURI);
 
-// Connect to MongoDB with Mongoose
-// mongoose
-//   .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-//   .then(() => console.log('MongoDb connected'))
-//   .catch(e => console.log(e));
-
 // Connect to MongoDB
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
@@ -48,10 +42,6 @@ client.connect(function(err) {
   console.log('Connected successfully to MongoDB server');
 
   db = client.db(dbName);
-
-  // findDocuments(db, function() {
-  //   client.close();
-  // });
 });
 
 // MongoDB find all documents function
@@ -76,36 +66,6 @@ app.get('/', async (req, res) => {
   const casesToday = data.total;
   const today = data.date;
   console.log('data received from scraper', data);
-
-  // Get the documents collection
-  const collection = db.collection('total-cases-per-day');
-
-  const findDocuments = function(db, callback) {
-    // Find some documents
-    collection.find({}).toArray(function(err, docs) {
-      assert.equal(err, null);
-      console.log('Found the following records');
-      console.log(docs);
-      callback(docs);
-    });
-  };
-
-  // console.log('Documents in DB', findDocuments);
-
-  let lastDoc;
-
-  await collection
-    .find({})
-    .sort({ _id: -1 })
-    .limit(1)
-    .toArray(function(err, docs) {
-      assert.equal(err, null);
-      console.log('Found this document');
-      console.log(docs);
-      lastDoc = docs;
-    });
-
-  await console.log('Last document on DB', lastDoc);
 
   // If today's date is equal to the date in the last element of the array, update the total value. If not, push the new total as a new object with today's date
   if (
@@ -142,7 +102,7 @@ app.get('/lastdoc', (req, res) => {
     });
 });
 
-app.get('/mongo', (req, res) => {
+app.get('/alldata', (req, res) => {
   // Get the documents collection
   const collection = db.collection('total-cases-per-day');
   // Find some documents

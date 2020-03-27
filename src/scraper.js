@@ -80,6 +80,7 @@ async function scrape(url) {
   // // Convert the string value into number
   // const total = await Number(noWhitespace);
 
+  // Get data from the government webpage, remove the whitespace and convert to number
   const total = await page.evaluate(() => {
     const cellContents = document.querySelector(
       '.contenttable tbody tr:last-of-type td:last-of-type'
@@ -91,7 +92,7 @@ async function scrape(url) {
   const date = `${new Date().getFullYear()}-${new Date().getMonth() +
     1}-${new Date().getDate()}`;
 
-  console.log(total);
+  console.log('total from scraper', total);
 
   // console.log('dataObj inside scraper', { date, total }); //Check the object created with today's date and the number scrapped from the website
 
