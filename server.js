@@ -11,8 +11,6 @@ const initialData = require('./src/initialData.json');
 // Destructuring data from internal component
 const { pageURL } = data;
 const { mongoURI } = data;
-// Import MongoDB Schema
-const Cases = require('./src/models/Cases');
 
 console.log(pageURL);
 console.log(mongoURI);
@@ -31,7 +29,7 @@ let db;
 const dbName = 'qc-coronavirus-cases';
 
 // Create a new MongoClient
-const client = new MongoClient(url, {
+const client = new MongoClient(mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -43,19 +41,6 @@ client.connect(function(err) {
 
   db = client.db(dbName);
 });
-
-// MongoDB find all documents function
-const findDocuments = function(db, callback) {
-  // Get the documents collection
-  const collection = db.collection('total-cases-per-day');
-  // Find some documents
-  collection.find({}).toArray(function(err, docs) {
-    assert.equal(err, null);
-    console.log('Found the following records');
-    console.log(docs);
-    callback(docs);
-  });
-};
 
 // Initiate body parser
 app.use(bodyParser.json());
@@ -77,6 +62,28 @@ app.get('/', async (req, res) => {
     initialData.push({ date: today, total: casesToday });
   }
   const casesYesterday = initialData[initialData.length - 2].total;
+
+  // Get the documents collection
+  const collection = db.collection('total-cases-per-day');
+
+  // Update MongoDB if new data with the same date, or create new document if not
+  collection.updateOne(
+    { date: today },
+    { $set: { date: today, total: casesToday } },
+    { upsert: true }
+  );
+
+  // Checks last document - remove after app is working
+  collection
+    .find({})
+    .sort({ _id: -1 })
+    .limit(1)
+    .toArray(function(err, doc) {
+      assert.equal(err, null);
+      console.log('Updated or inserted this document');
+      console.log(doc);
+    });
+
   res.send(
     `As of ${new Date()} there are ${
       data.total
