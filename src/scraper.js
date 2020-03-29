@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+const url = require;
 
 let data = [
   {
@@ -92,8 +93,6 @@ async function scrape(url) {
   const date = `${new Date().getFullYear()}-${new Date().getMonth() +
     1}-${new Date().getDate()}`;
 
-  console.log('total from scraper', total);
-
   // console.log('dataObj inside scraper', { date, total }); //Check the object created with today's date and the number scrapped from the website
 
   // console.log('Dataset situation after page loads', data); //Check the pushing of the new object into the initial dataset
@@ -102,6 +101,8 @@ async function scrape(url) {
     date: date,
     total,
   };
+
+  console.log('dataObj from scraper', dataObj);
 
   //Error catching
   try {
@@ -116,9 +117,9 @@ async function scrape(url) {
 }
 
 // Function executed with the website from QC government. This will be integrated into another file when the app is finished.
-scrape(
-  'https://www.quebec.ca/sante/problemes-de-sante/a-z/coronavirus-2019/situation-coronavirus-quebec/'
-);
+// scrape(
+//   'https://www.quebec.ca/sante/problemes-de-sante/a-z/coronavirus-2019/situation-coronavirus-quebec/'
+// );
 
 //Export the function to be used in other files.
 module.exports = scrape;

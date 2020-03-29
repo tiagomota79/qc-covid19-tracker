@@ -1,7 +1,6 @@
 // Import and initiate libraries
 const express = require('express');
 const app = express();
-const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 
 // Import internal data and components
@@ -45,8 +44,15 @@ client.connect(function(err) {
 // Initiate body parser
 app.use(bodyParser.json());
 
+app.use('/', express.static('build')); // Needed for the HTML and JS files
+app.use('/', express.static('public')); // Needed for local assets
+
 // Routes
-app.get('/', async (req, res) => {
+// app.get('/', function(req, res) {
+//   res.redirect('/scrape');
+// });
+
+app.get('/scrape', async (req, res) => {
   const data = await scrape(pageURL);
   const casesToday = data.total;
   const today = data.date;
@@ -117,10 +123,30 @@ app.get('/alldata', (req, res) => {
     assert.equal(err, null);
     console.log('Found the following records');
     console.log(docs);
-    // callback(docs);
-    // res.send(JSON.stringify(docs));
-    res.json(docs);
+    res.send(JSON.stringify(docs));
   });
+});
+
+app.post('/updatedb', async (req, res) => {
+  const data = await scrape(pageURL);
+  const casesToday = data.total;
+  const today = data.date;
+  console.log('data received from scraper', data);
+
+  // Get the documents collection
+  const collection = db.collection('total-cases-per-day');
+
+  // Update MongoDB if new data with the same date, or create new document if not
+  collection.updateOne(
+    { date: today },
+    { $set: { date: today, total: casesToday } },
+    { upsert: true }
+  );
+});
+
+app.all('/*', (req, res, next) => {
+  // needed for react router
+  res.sendFile(__dirname + '/build/index.html');
 });
 
 app.listen(3000);

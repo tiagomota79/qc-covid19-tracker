@@ -1,11 +1,6 @@
-const data = require('./data');
-const { pageURL } = data;
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
 
-const scrape = require('./scraper');
-const compareAndSave = require('./results');
-
-scrape(pageURL)
-  .then(dataObj => {
-    compareAndSave(dataObj);
-  })
-  .catch(console.error);
+ReactDOM.render(<App />, document.getElementById('root'));
