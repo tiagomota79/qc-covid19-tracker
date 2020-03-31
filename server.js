@@ -1,5 +1,6 @@
 // Import and initiate libraries
 const express = require('express');
+const cors = require('cors');
 const app = express();
 const bodyParser = require('body-parser');
 
@@ -41,16 +42,11 @@ client.connect(function(err) {
   db = client.db(dbName);
 });
 
-// Initiate body parser
+// Initiate body parser and cors
+app.use(cors());
 app.use(bodyParser.json());
 
-app.use('/', express.static('build')); // Needed for the HTML and JS files
-app.use('/', express.static('public')); // Needed for local assets
-
 // Routes
-// app.get('/', function(req, res) {
-//   res.redirect('/scrape');
-// });
 
 app.get('/scrape', async (req, res) => {
   const data = await scrape(pageURL);
@@ -90,12 +86,13 @@ app.get('/scrape', async (req, res) => {
       console.log(doc);
     });
 
-  res.send(
-    `As of ${new Date()} there are ${
-      data.total
-    } confirmed cases of coronavirus infection in Quebec (+ ${casesToday -
-      casesYesterday} after yesterday).`
-  );
+  // res.send(
+  //   `As of ${new Date()} there are ${
+  //     data.total
+  //   } confirmed cases of coronavirus infection in Quebec (+ ${casesToday -
+  //     casesYesterday} after yesterday).`
+  // );
+  res.send(JSON.stringify(data));
 });
 
 app.get('/lastdoc', (req, res) => {
@@ -142,11 +139,6 @@ app.post('/updatedb', async (req, res) => {
     { $set: { date: today, total: casesToday } },
     { upsert: true }
   );
-});
-
-app.all('/*', (req, res, next) => {
-  // needed for react router
-  res.sendFile(__dirname + '/build/index.html');
 });
 
 app.listen(3000);
