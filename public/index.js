@@ -3,6 +3,7 @@ let chart = am4core.create('chartdiv', am4charts.XYChart);
 
 // Themes begin
 am4core.useTheme(am4themes_animated);
+am4core.useTheme(am4themes_material);
 // Themes end
 
 // Get data from server and generate graph
@@ -106,7 +107,7 @@ const getData = async () => {
   headline.appendChild(casesHeadline);
   const sentenceDown = document.createElement('div');
   sentenceDown.setAttribute('class', 'headline');
-  sentenceDown.innerHTML = `confirmed COVID-19 cases (up ${diff} from yesterday)`;
+  sentenceDown.innerHTML = `confirmed COVID-19 cases (up ${diff} from yesterday).`;
   headline.appendChild(sentenceDown);
 
   // Assign data to chart
@@ -126,7 +127,7 @@ const getData = async () => {
   //   casesSeries.strokeWidth = 1.5;
   //   casesSeries.fillOpacity = 1;
   //   casesSeries.stroke = am4core.color('dodgerblue');
-  casesSeries.columns.template.fill = am4core.color('dodgerblue');
+  //   casesSeries.columns.template.fill = am4core.color('dodgerblue');
   casesSeries.tooltipText = '{value}';
   casesSeries.name = 'Cases';
 

@@ -1,0 +1,24 @@
+body {
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+}
+
+.headline {
+  font-size: 2rem;
+}
+
+.cases-headline {
+  font-size: 3rem;
+  font-weight: bold;
+  color: dodgerblue;
+}
+
+#chartdiv {
+  position: relative;
+  height: 30rem;
+}
+
+#source,
+#disclaimer {
+  font-size: smaller;
+}
