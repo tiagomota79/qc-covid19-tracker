@@ -6,6 +6,8 @@ am4core.useTheme(am4themes_animated);
 am4core.useTheme(am4themes_material);
 // Themes end
 
+console.log('chart data', chart.data);
+
 // Get data from server and generate graph
 const getData = async () => {
   const responses = await Promise.all([
@@ -95,28 +97,49 @@ const getData = async () => {
   const diff =
     alldata[alldata.length - 1].total - alldata[alldata.length - 2].total;
 
-  // Create headline
-  const headline = document.getElementById('headline');
-  const sentenceTop = document.createElement('div');
-  sentenceTop.setAttribute('class', 'headline');
-  sentenceTop.innerHTML = `As of ${dateLong()}, Quebec has`;
-  headline.appendChild(sentenceTop);
-  const casesHeadline = document.createElement('div');
-  casesHeadline.setAttribute('class', 'cases-headline');
-  casesHeadline.innerHTML = scrape.total;
-  headline.appendChild(casesHeadline);
-  const sentenceDown = document.createElement('div');
-  sentenceDown.setAttribute('class', 'headline');
-  sentenceDown.innerHTML = `confirmed COVID-19 cases (up ${diff} from yesterday).`;
-  headline.appendChild(sentenceDown);
+  // Account for government website not being updated yet
+  if (scrape.total === alldata[alldata.length - 1].total) {
+  }
 
   // Assign data to chart
   chart.data = alldata;
   console.log('Chart data', chart.data);
 
+  // Create headline, soucre and disclaimer
+  function createTextElement(elementId, attribute, innerHTML) {
+    const htmlElement = document.getElementById(elementId);
+    const element = document.createElement('div');
+    element.setAttribute('class', attribute);
+    element.innerHTML = innerHTML;
+    htmlElement.appendChild(element);
+  }
+
+  createTextElement('headline', 'headline', `As of ${dateLong()}, Quebec has`);
+  createTextElement('headline', 'cases-headline', scrape.total);
+  createTextElement(
+    'headline',
+    'headline',
+    `confirmed COVID-19 cases (up ${diff} from yesterday).`
+  );
+  createTextElement(
+    'footer',
+    'source',
+    `Source:
+  <a
+    href="https://www.quebec.ca/sante/problemes-de-sante/a-z/coronavirus-2019/situation-coronavirus-quebec/"
+    >Quebec.ca</a
+  >`
+  );
+  createTextElement(
+    'footer',
+    'disclaimer',
+    'This is a personal project, it is not meant to alarm anyone or cause panic. All the data is real, collected daily from the Quebec government website. For more information on the COVID-19 spread, consult the source above.'
+  );
+
   // Create axes
   let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
   dateAxis.renderer.minGridDistance = 50;
+  dateAxis.renderer.grid.template.strokeOpacity = 0;
 
   let casesAxis = chart.yAxes.push(new am4charts.ValueAxis());
 

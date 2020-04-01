@@ -7,10 +7,9 @@ const bodyParser = require('body-parser');
 // Import internal data and components
 const scrape = require('./src/scraper');
 const data = require('./src/data');
-const initialData = require('./src/initialData.json');
 // Destructuring data from internal component
-const { pageURL } = data;
-const { mongoURI } = data;
+const { pageURL } = data; // This is the government's page URL for the scraper
+const { mongoURI } = data; // This is the MongoDB connection URI
 
 console.log(pageURL);
 console.log(mongoURI);
@@ -18,9 +17,6 @@ console.log(mongoURI);
 // Connect to MongoDB
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
-
-// Connection URL
-const url = mongoURI;
 
 // DB object to be used by MongoDB
 let db;
@@ -54,17 +50,6 @@ app.get('/scrape', async (req, res) => {
   const today = data.date;
   console.log('data received from scraper', data);
 
-  // If today's date is equal to the date in the last element of the array, update the total value. If not, push the new total as a new object with today's date
-  if (
-    initialData[initialData.length - 1].date === today ||
-    initialData[initialData.length - 1].total === casesToday
-  ) {
-    initialData[initialData.length - 1].total === casesToday;
-  } else {
-    initialData.push({ date: today, total: casesToday });
-  }
-  const casesYesterday = initialData[initialData.length - 2].total;
-
   // Get the documents collection
   const collection = db.collection('total-cases-per-day');
 
@@ -74,24 +59,6 @@ app.get('/scrape', async (req, res) => {
     { $set: { date: today, total: casesToday } },
     { upsert: true }
   );
-
-  // Checks last document - remove after app is working
-  collection
-    .find({})
-    .sort({ _id: -1 })
-    .limit(1)
-    .toArray(function(err, doc) {
-      assert.equal(err, null);
-      console.log('Updated or inserted this document');
-      console.log(doc);
-    });
-
-  // res.send(
-  //   `As of ${new Date()} there are ${
-  //     data.total
-  //   } confirmed cases of coronavirus infection in Quebec (+ ${casesToday -
-  //     casesYesterday} after yesterday).`
-  // );
   res.send(JSON.stringify(data));
 });
 
@@ -122,23 +89,6 @@ app.get('/alldata', (req, res) => {
     console.log(docs);
     res.send(JSON.stringify(docs));
   });
-});
-
-app.post('/updatedb', async (req, res) => {
-  const data = await scrape(pageURL);
-  const casesToday = data.total;
-  const today = data.date;
-  console.log('data received from scraper', data);
-
-  // Get the documents collection
-  const collection = db.collection('total-cases-per-day');
-
-  // Update MongoDB if new data with the same date, or create new document if not
-  collection.updateOne(
-    { date: today },
-    { $set: { date: today, total: casesToday } },
-    { upsert: true }
-  );
 });
 
 app.listen(3000);

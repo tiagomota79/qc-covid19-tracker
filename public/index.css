@@ -4,21 +4,45 @@ body {
 }
 
 .headline {
-  font-size: 2rem;
+  font-size: 1rem;
 }
 
 .cases-headline {
-  font-size: 3rem;
+  font-size: 1.5rem;
   font-weight: bold;
   color: dodgerblue;
 }
 
 #chartdiv {
   position: relative;
-  height: 30rem;
+  height: 20rem;
+  font-size: x-small;
 }
 
-#source,
-#disclaimer {
-  font-size: smaller;
+.source,
+.disclaimer {
+  font-size: xx-small;
+}
+
+@media only screen and (min-width: 600px) {
+  .headline {
+    font-size: 2rem;
+  }
+
+  .cases-headline {
+    font-size: 3rem;
+    font-weight: bold;
+    color: dodgerblue;
+  }
+
+  #chartdiv {
+    position: relative;
+    height: 30rem;
+    font-size: small;
+  }
+
+  .source,
+  .disclaimer {
+    font-size: smaller;
+  }
 }
