@@ -1,6 +1,24 @@
 body {
+  margin: 0;
   font-family: 'Montserrat', sans-serif;
   text-align: center;
+}
+
+#spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.spinner {
+  height: 15%;
+}
+
+#headline,
+#chartdiv,
+#footer {
+  margin: 0.5rem;
 }
 
 .headline {
@@ -24,7 +42,21 @@ body {
   font-size: xx-small;
 }
 
+.source {
+  margin-bottom: 1rem;
+}
+
+.disclaimer {
+  padding: 1rem;
+}
+
 @media only screen and (min-width: 600px) {
+  #headline,
+  #chartdiv,
+  #footer {
+    margin: 1.5rem;
+  }
+
   .headline {
     font-size: 2rem;
   }
@@ -44,5 +76,13 @@ body {
   .source,
   .disclaimer {
     font-size: smaller;
+  }
+
+  .source {
+    margin-bottom: 1rem;
+  }
+
+  .disclaimer {
+    padding: 1rem;
   }
 }

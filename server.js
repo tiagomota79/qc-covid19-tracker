@@ -50,15 +50,15 @@ app.get('/scrape', async (req, res) => {
   const today = data.date;
   console.log('data received from scraper', data);
 
-  // Get the documents collection
-  const collection = db.collection('total-cases-per-day');
+  // // Get the documents collection
+  // const collection = db.collection('total-cases-per-day');
 
-  // Update MongoDB if new data with the same date, or create new document if not
-  collection.updateOne(
-    { date: today },
-    { $set: { date: today, total: casesToday } },
-    { upsert: true }
-  );
+  // // Update MongoDB if new data with the same date, or create new document if not
+  // collection.updateOne(
+  //   { date: today },
+  //   { $set: { date: today, total: casesToday } },
+  //   { upsert: true }
+  // );
   res.send(JSON.stringify(data));
 });
 
@@ -83,6 +83,28 @@ app.get('/alldata', (req, res) => {
   // Get the documents collection
   const collection = db.collection('total-cases-per-day');
   // Find some documents
+  collection.find({}).toArray(function(err, docs) {
+    assert.equal(err, null);
+    console.log('Found the following records');
+    console.log(docs);
+    res.send(JSON.stringify(docs));
+  });
+});
+
+app.get('/updatedb', async (req, res) => {
+  const data = await scrape(pageURL);
+  const casesToday = data.total;
+  const today = data.date;
+  console.log('data received from scraper', data);
+
+  // Get the documents collection
+  const collection = db.collection('total-cases-per-day');
+
+  // Update MongoDB if new data with the same date, or create new document if not
+  collection.insertOne(
+    { $set: { date: today, total: casesToday } },
+    { upsert: true }
+  );
   collection.find({}).toArray(function(err, docs) {
     assert.equal(err, null);
     console.log('Found the following records');
