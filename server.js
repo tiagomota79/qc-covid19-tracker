@@ -42,8 +42,13 @@ client.connect(function (err) {
 app.use(cors());
 app.use(bodyParser.json());
 
+// Allow Express to access the public folder
+app.use(express.static('public'));
+
 // Routes
-app.get('/', (req, res) => {});
+app.get('/', (req, res) => {
+  res.sendFile('index.html');
+});
 
 app.get('/scrape', async (req, res) => {
   const data = await scrape(pageURL);
