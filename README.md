@@ -24,3 +24,7 @@ The bulk of the work is done by the server, scraping data from the website, and 
 ### Known issues
 
 The amCharts has a complicated relationship with dates on a XY chart. While the bars correctly show the evolution of cases from the data in the database, the dates on the X axis don't line up with the actual bar from that date, and the cursor don't show the actual value from the database, but a weird average.
+
+### **Screenshots**
+
+![screenshot](screenshots/screenshot.png)
