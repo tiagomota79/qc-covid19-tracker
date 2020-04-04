@@ -7,7 +7,7 @@ async function scrape(url) {
   const page = await browser.newPage();
   await page.goto(url);
 
-  // Get data from the government webpage, remove the whitespace and convert to number
+  // Get total cases from the government webpage, remove the whitespace and convert to number
   const total = await page.evaluate(() => {
     const cellContents = document.querySelector(
       '.contenttable tbody tr:last-of-type td:last-of-type'
@@ -15,6 +15,7 @@ async function scrape(url) {
     return Number(cellContents.replace(/\s/g, ''));
   });
 
+  // Get full table from government webpage
   const table = await page.evaluate(() => {
     const rows = document.querySelectorAll('.contenttable tbody tr');
     return Array.from(rows, (row) => {
