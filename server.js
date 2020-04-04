@@ -80,12 +80,15 @@ app.get('/alldata', (req, res) => {
   // Get the documents collection
   const collection = db.collection('total-cases-per-day');
   // Find some documents
-  collection.find({}).toArray(function (err, docs) {
-    assert.equal(err, null);
-    console.log('Found the following records');
-    console.log(docs);
-    res.send(JSON.stringify(docs));
-  });
+  collection
+    .find({})
+    .sort({ total: 1 })
+    .toArray(function (err, docs) {
+      assert.equal(err, null);
+      console.log('Found the following records');
+      console.log(docs);
+      res.send(JSON.stringify(docs));
+    });
 });
 
 app.get('/updatedb', async (req, res) => {
@@ -101,12 +104,15 @@ app.get('/updatedb', async (req, res) => {
   collection.insertOne({ date: today, total: casesToday });
 
   // Get full collection to send to front-end
-  collection.find({}).toArray(function (err, docs) {
-    assert.equal(err, null);
-    console.log('Found the following records');
-    console.log(docs);
-    res.send(JSON.stringify(docs));
-  });
+  collection
+    .find({})
+    .sort({ total: 1 })
+    .toArray(function (err, docs) {
+      assert.equal(err, null);
+      console.log('Found the following records');
+      console.log(docs);
+      res.send(JSON.stringify(docs));
+    });
 });
 
 app.listen(3000);
