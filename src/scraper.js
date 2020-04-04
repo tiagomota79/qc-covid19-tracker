@@ -1,56 +1,9 @@
 const puppeteer = require('puppeteer');
 const url = require;
 
-let data = [
-  {
-    date: '2020-3-8',
-    total: 0,
-  },
-  {
-    date: '2020-3-9',
-    total: 2,
-  },
-  {
-    date: '2020-3-11',
-    total: 7,
-  },
-  {
-    date: '2020-3-12',
-    total: 9,
-  },
-  {
-    date: '2020-3-13',
-    total: 17,
-  },
-  {
-    date: '2020-3-14',
-    total: 21,
-  },
-  {
-    date: '2020-3-16',
-    total: 41,
-  },
-  {
-    date: '2020-3-17',
-    total: 71,
-  },
-  {
-    date: '2020-3-18',
-    total: 94,
-  },
-  {
-    date: '2020-3-19',
-    total: 121,
-  },
-  {
-    date: '2020-3-20',
-    total: 139,
-  },
-];
-
 async function scrape(url) {
   //Initiate Puppeteer browser and direct to the URL
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
   const page = await browser.newPage();
   await page.goto(url);
 
