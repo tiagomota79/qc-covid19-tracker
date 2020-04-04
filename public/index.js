@@ -168,6 +168,12 @@ const getData = async () => {
     'disclaimer',
     'This is a personal project, it is not meant to alarm anyone or cause panic. All the data is real, collected daily from the Quebec government website. For more information on the COVID-19 spread, consult the source above.'
   );
+  createHtmlElement(
+    'footer',
+    'sourcecode',
+    `<a href="https://github.com/tiagomota79/qc-covid19-tracker">GitHub Repository</a>`
+  );
+  createHtmlElement('footer', 'copyright', '© 2020 Tiago Mota');
 
   // Create charts instances
   let mainChart = am4core.create('mainchartdiv', am4charts.XYChart); // This is the main chart, showing the cumulative cases by episode date
