@@ -14,6 +14,80 @@ spinnerImg.setAttribute('src', 'images/Bars-1s-200px.gif');
 spinnerImg.setAttribute('class', 'spinner');
 spinner.appendChild(spinnerImg);
 
+// Assign DOM body element to variable, to be used for DOM manipulation
+const body = document.body || document.getElementsByTagName('BODY')[0];
+
+// Function to get today's date in long format
+function dateLong() {
+  let year = String(new Date().getFullYear());
+  let day = String(new Date().getDate());
+  let month;
+  switch (new Date().getMonth()) {
+    case 0:
+      month = 'January';
+      break;
+    case 1:
+      month = 'February';
+      break;
+    case 2:
+      month = 'March';
+      break;
+    case 3:
+      month = 'April';
+      break;
+    case 4:
+      month = 'May';
+      break;
+    case 5:
+      month = 'June';
+      break;
+    case 6:
+      month = 'July';
+      break;
+    case 7:
+      month = 'August';
+      break;
+    case 8:
+      month = 'September';
+      break;
+    case 9:
+      month = 'October';
+      break;
+    case 10:
+      month = 'November';
+      break;
+    case 11:
+      month = 'December';
+      break;
+  }
+  let weekday;
+  switch (new Date().getDay()) {
+    case 0:
+      weekday = 'Sunday';
+      break;
+    case 1:
+      weekday = 'Monday';
+      break;
+    case 2:
+      weekday = 'Tuesday';
+      break;
+    case 3:
+      weekday = 'Wednesday';
+      break;
+    case 4:
+      weekday = 'Thursday';
+      break;
+    case 5:
+      weekday = 'Friday';
+      break;
+    case 6:
+      weekday = 'Saturday';
+  }
+
+  let dateToShow = `${weekday}, ${month} ${day}, ${year}`;
+  return dateToShow;
+}
+
 // Get data from server and generate graph
 const getData = async () => {
   // Scrape data from government website and last document on database
@@ -31,7 +105,6 @@ const getData = async () => {
 
   // Function to create the divs where the charts will be placed
   function createChartDiv(attribute) {
-    const body = document.body || document.getElementsByTagName('BODY')[0];
     const footer = document.getElementById('footer');
     const chartDiv = document.createElement('div');
     chartDiv.setAttribute('id', attribute);
@@ -41,95 +114,33 @@ const getData = async () => {
   // Placeholder for complete dataset
   let alldata;
 
+  // Auxiliary function to perform several DOM manipulations only after the data is loades
+  function domElements() {
+    document.body.removeChild(spinner); // removes spinner after the data is loaded
+    createChartDiv('mainchartdiv'); // Adds the div where the main chart will be placed
+    createChartDiv('regionchartdiv'); // Adds the div where the regions chart will be placed
+  }
+
   // Compare scrape data with last document. If total cases number is the same, no action is performed on database. If they are different, the database is updated.
   if (scrape.total !== lastdoc[lastdoc.length - 1].total) {
     const update = await fetch('http://localhost:3000/updatedb');
     alldata = await update.json();
-    document.body.removeChild(spinner);
-    createChartDiv('mainchartdiv');
-    createChartDiv('regionchartdiv');
+    domElements();
   } else {
     const alldataFetch = await fetch('http://localhost:3000/alldata');
     alldata = await alldataFetch.json();
-    document.body.removeChild(spinner);
-    createChartDiv('mainchartdiv');
-    createChartDiv('regionchartdiv');
-  }
-
-  // Function to get today's date in long format
-  function dateLong() {
-    let year = String(new Date().getFullYear());
-    let day = String(new Date().getDate());
-    let month;
-    switch (new Date().getMonth()) {
-      case 0:
-        month = 'January';
-        break;
-      case 1:
-        month = 'February';
-        break;
-      case 2:
-        month = 'March';
-        break;
-      case 3:
-        month = 'April';
-        break;
-      case 4:
-        month = 'May';
-        break;
-      case 5:
-        month = 'June';
-        break;
-      case 6:
-        month = 'July';
-        break;
-      case 7:
-        month = 'August';
-        break;
-      case 8:
-        month = 'September';
-        break;
-      case 9:
-        month = 'October';
-        break;
-      case 10:
-        month = 'November';
-        break;
-      case 11:
-        month = 'December';
-        break;
-    }
-    let weekday;
-    switch (new Date().getDay()) {
-      case 0:
-        weekday = 'Sunday';
-        break;
-      case 1:
-        weekday = 'Monday';
-        break;
-      case 2:
-        weekday = 'Tuesday';
-        break;
-      case 3:
-        weekday = 'Wednesday';
-        break;
-      case 4:
-        weekday = 'Thursday';
-        break;
-      case 5:
-        weekday = 'Friday';
-        break;
-      case 6:
-        weekday = 'Saturday';
-    }
-
-    let dateToShow = `${weekday}, ${month} ${day}, ${year}`;
-    return dateToShow;
+    domElements();
   }
 
   // Get difference bewteen today's cases and yesterday's cases
   const diff =
     alldata[alldata.length - 1].total - alldata[alldata.length - 2].total;
+
+  // Add title to the #title div
+  const title = document.createElement('H1');
+  title.setAttribute('id', 'title');
+  title.innerHTML = 'COVID-19 situation in Quebec';
+  body.prepend(title);
 
   // Create headline, source and disclaimer
   createHtmlElement('headline', 'headline', `As of ${dateLong()}, Quebec has`);
@@ -170,13 +181,13 @@ const getData = async () => {
   console.log('Regions Chart data', regionsChart.data);
 
   // Set up main chart title
-  let title = mainChart.titles.create();
-  title.text = 'Cumulative Cases by Episode Date';
-  title.fontSize = '1rem';
-  title.marginTop = 30;
-  title.marginBottom = 10;
-  title.fontWeight = 'bold';
-  title.color = am4core.color('dodgerblue');
+  let mainChartTitle = mainChart.titles.create();
+  mainChartTitle.text = 'Cumulative Cases by Episode Date';
+  mainChartTitle.fontSize = '1rem';
+  mainChartTitle.marginTop = 30;
+  mainChartTitle.marginBottom = 10;
+  mainChartTitle.fontWeight = 'bold';
+  mainChartTitle.color = am4core.color('dodgerblue');
 
   // Create main chart axes
   let dateAxis = mainChart.xAxes.push(new am4charts.DateAxis());
@@ -207,6 +218,21 @@ const getData = async () => {
   let pieSeries = regionsChart.series.push(new am4charts.PieSeries());
   pieSeries.dataFields.value = 'cases';
   pieSeries.dataFields.category = 'region';
+
+  // Change regions chart tooltip information
+  pieSeries.slices.template.tooltipText = '{category}: {value.value}';
+
+  // Set up regions chart title
+  let regionsChartTitle = regionsChart.titles.create();
+  regionsChartTitle.text = 'Cases by region';
+  regionsChartTitle.fontSize = '1rem';
+  regionsChartTitle.marginTop = 30;
+  regionsChartTitle.marginBottom = 10;
+  regionsChartTitle.fontWeight = 'bold';
+  regionsChartTitle.color = am4core.color('dodgerblue');
+
+  // // Add regions chart legend
+  // regionsChart.legend = new am4charts.Legend();
 };
 
 getData();

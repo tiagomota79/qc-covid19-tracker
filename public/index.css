@@ -15,8 +15,18 @@ body {
   height: 15%;
 }
 
+#title {
+  margin: 0;
+  padding: 1rem;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: white;
+  background-color: dodgerblue;
+}
+
 #headline,
 #mainchartdiv,
+#regionchartdiv,
 #footer {
   margin: 0.5rem;
 }
@@ -31,7 +41,8 @@ body {
   color: dodgerblue;
 }
 
-#mainchartdiv {
+#mainchartdiv,
+#regionchartdiv {
   position: relative;
   height: 20rem;
   font-size: x-small;
@@ -51,8 +62,18 @@ body {
 }
 
 @media only screen and (min-width: 600px) {
+  #title {
+    margin: 0;
+    padding: 1rem;
+    font-size: 3rem;
+    font-weight: bold;
+    color: white;
+    background-color: dodgerblue;
+  }
+
   #headline,
   #mainchartdiv,
+  #regionchartdiv,
   #footer {
     margin: 1.5rem;
   }
@@ -67,7 +88,8 @@ body {
     color: dodgerblue;
   }
 
-  #mainchartdiv {
+  #mainchartdiv,
+  #regionchartdiv {
     position: relative;
     height: 30rem;
     font-size: small;
