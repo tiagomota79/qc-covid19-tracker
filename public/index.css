@@ -16,7 +16,7 @@ body {
 }
 
 #headline,
-#chartdiv,
+#mainchartdiv,
 #footer {
   margin: 0.5rem;
 }
@@ -31,7 +31,7 @@ body {
   color: dodgerblue;
 }
 
-#chartdiv {
+#mainchartdiv {
   position: relative;
   height: 20rem;
   font-size: x-small;
@@ -52,7 +52,7 @@ body {
 
 @media only screen and (min-width: 600px) {
   #headline,
-  #chartdiv,
+  #mainchartdiv,
   #footer {
     margin: 1.5rem;
   }
@@ -67,7 +67,7 @@ body {
     color: dodgerblue;
   }
 
-  #chartdiv {
+  #mainchartdiv {
     position: relative;
     height: 30rem;
     font-size: small;

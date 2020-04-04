@@ -1,11 +1,3 @@
-// Create chart instance
-let chart = am4core.create('chartdiv', am4charts.XYChart);
-
-// Themes begin
-am4core.useTheme(am4themes_animated);
-am4core.useTheme(am4themes_material);
-// Themes end
-
 // Auxiliary function to create HTML elements
 function createHtmlElement(elementId, attribute, innerHTML) {
   const htmlElement = document.getElementById(elementId);
@@ -30,12 +22,21 @@ const getData = async () => {
     await fetch('http://localhost:3000/lastdoc'),
   ]);
   const [scrape, lastdoc] = await Promise.all(
-    responses.map(async response => await response.json())
+    responses.map(async (response) => await response.json())
   );
   console.log('scrape', scrape);
   console.log('lastdoc', lastdoc);
   console.log('scrape total cases', scrape.total);
   console.log('lastdoc total cases', lastdoc[lastdoc.length - 1].total);
+
+  // Function to create the divs where the charts will be placed
+  function createChartDiv(attribute) {
+    const body = document.body || document.getElementsByTagName('BODY')[0];
+    const footer = document.getElementById('footer');
+    const chartDiv = document.createElement('div');
+    chartDiv.setAttribute('id', attribute);
+    body.insertBefore(chartDiv, footer);
+  }
 
   // Placeholder for complete dataset
   let alldata;
@@ -45,15 +46,15 @@ const getData = async () => {
     const update = await fetch('http://localhost:3000/updatedb');
     alldata = await update.json();
     document.body.removeChild(spinner);
+    createChartDiv('mainchartdiv');
+    createChartDiv('regionchartdiv');
   } else {
     const alldataFetch = await fetch('http://localhost:3000/alldata');
     alldata = await alldataFetch.json();
     document.body.removeChild(spinner);
+    createChartDiv('mainchartdiv');
+    createChartDiv('regionchartdiv');
   }
-
-  // Assign data to chart
-  chart.data = alldata;
-  console.log('Chart data', chart.data);
 
   // Function to get today's date in long format
   function dateLong() {
@@ -153,8 +154,23 @@ const getData = async () => {
     'This is a personal project, it is not meant to alarm anyone or cause panic. All the data is real, collected daily from the Quebec government website. For more information on the COVID-19 spread, consult the source above.'
   );
 
-  // Set up chart title
-  let title = chart.titles.create();
+  // Create charts instances
+  let mainChart = am4core.create('mainchartdiv', am4charts.XYChart); // This is the main chart, showing the cumulative cases by episode date
+  let regionsChart = am4core.create('regionchartdiv', am4charts.PieChart); // This is the secondary chart, showing the cases by region
+
+  // Themes begin
+  am4core.useTheme(am4themes_animated);
+  am4core.useTheme(am4themes_material);
+  // Themes end
+
+  // Assign data to charts
+  mainChart.data = alldata;
+  regionsChart.data = scrape.regions;
+  console.log('Main Chart data', mainChart.data);
+  console.log('Regions Chart data', regionsChart.data);
+
+  // Set up main chart title
+  let title = mainChart.titles.create();
   title.text = 'Cumulative Cases by Episode Date';
   title.fontSize = '1rem';
   title.marginTop = 30;
@@ -162,18 +178,18 @@ const getData = async () => {
   title.fontWeight = 'bold';
   title.color = am4core.color('dodgerblue');
 
-  // Create axes
-  let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+  // Create main chart axes
+  let dateAxis = mainChart.xAxes.push(new am4charts.DateAxis());
   dateAxis.renderer.minGridDistance = 50;
   dateAxis.renderer.grid.template.strokeOpacity = 0;
   dateAxis.renderer.labels.template.horizontalCenter = 'right';
   dateAxis.renderer.labels.template.verticalCenter = 'middle';
   dateAxis.renderer.labels.template.rotation = 270;
 
-  let casesAxis = chart.yAxes.push(new am4charts.ValueAxis());
+  let casesAxis = mainChart.yAxes.push(new am4charts.ValueAxis());
 
-  // Create series
-  let casesSeries = chart.series.push(new am4charts.ColumnSeries());
+  // Create main chart series
+  let casesSeries = mainChart.series.push(new am4charts.ColumnSeries());
   casesSeries.dataFields.dateX = 'date';
   casesSeries.dataFields.valueY = 'total';
   //   casesSeries.strokeWidth = 1.5;
@@ -183,9 +199,14 @@ const getData = async () => {
   casesSeries.tooltipText = '{value}';
   casesSeries.name = 'Cases';
 
-  chart.cursor = new am4charts.XYCursor();
-  chart.cursor.snapToSeries = casesSeries;
-  chart.cursor.dateAxis = dateAxis;
+  mainChart.cursor = new am4charts.XYCursor();
+  mainChart.cursor.snapToSeries = casesSeries;
+  mainChart.cursor.dateAxis = dateAxis;
+
+  // Create regions chart series
+  let pieSeries = regionsChart.series.push(new am4charts.PieSeries());
+  pieSeries.dataFields.value = 'cases';
+  pieSeries.dataFields.category = 'region';
 };
 
 getData();

@@ -31,7 +31,7 @@ const client = new MongoClient(mongoURI, {
 });
 
 // Use connect method to connect to the Server
-client.connect(function(err) {
+client.connect(function (err) {
   assert.equal(null, err);
   console.log('Connected successfully to MongoDB server');
 
@@ -43,6 +43,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Routes
+app.get('/', (req, res) => {});
 
 app.get('/scrape', async (req, res) => {
   const data = await scrape(pageURL);
@@ -50,15 +51,6 @@ app.get('/scrape', async (req, res) => {
   const today = data.date;
   console.log('data received from scraper', data);
 
-  // // Get the documents collection
-  // const collection = db.collection('total-cases-per-day');
-
-  // // Update MongoDB if new data with the same date, or create new document if not
-  // collection.updateOne(
-  //   { date: today },
-  //   { $set: { date: today, total: casesToday } },
-  //   { upsert: true }
-  // );
   res.send(JSON.stringify(data));
 });
 
@@ -71,7 +63,7 @@ app.get('/lastdoc', (req, res) => {
     .find({})
     .sort({ _id: -1 })
     .limit(1)
-    .toArray(function(err, doc) {
+    .toArray(function (err, doc) {
       assert.equal(err, null);
       console.log('Found this document');
       console.log(doc);
@@ -83,7 +75,7 @@ app.get('/alldata', (req, res) => {
   // Get the documents collection
   const collection = db.collection('total-cases-per-day');
   // Find some documents
-  collection.find({}).toArray(function(err, docs) {
+  collection.find({}).toArray(function (err, docs) {
     assert.equal(err, null);
     console.log('Found the following records');
     console.log(docs);
@@ -100,12 +92,11 @@ app.get('/updatedb', async (req, res) => {
   // Get the documents collection
   const collection = db.collection('total-cases-per-day');
 
-  // Update MongoDB if new data with the same date, or create new document if not
-  collection.insertOne(
-    { $set: { date: today, total: casesToday } },
-    { upsert: true }
-  );
-  collection.find({}).toArray(function(err, docs) {
+  // Update MongoDB with new data
+  collection.insertOne({ date: today, total: casesToday });
+
+  // Get full collection to send to front-end
+  collection.find({}).toArray(function (err, docs) {
     assert.equal(err, null);
     console.log('Found the following records');
     console.log(docs);
