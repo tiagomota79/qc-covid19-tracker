@@ -1,6 +1,9 @@
 {
   "name": "qc-covid19-tracker",
   "version": "1.0.0",
+  "engines": {
+    "node": "12.16.x"
+  },
   "description": "",
   "main": "server.js",
   "scripts": {
