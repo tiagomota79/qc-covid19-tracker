@@ -36,6 +36,14 @@ async function scrape(url) {
     });
   });
 
+  // Convert the table object into a single object with region names for keys and cases for values, to use in mobile version of chart
+  let tableMobile = [];
+  let tableMobileObject = {};
+  tableObject.forEach((item, index, arr) => {
+    tableMobileObject[arr[index].region] = arr[index].cases;
+  });
+  tableMobile.push(tableMobileObject);
+
   // Gets today's date in YYYY-MM-DD format
   const date = `${new Date().getFullYear()}-${
     new Date().getMonth() + 1
@@ -45,6 +53,7 @@ async function scrape(url) {
     date: date,
     total,
     regions: tableObject,
+    regionsMobile: tableMobile,
   };
 
   console.log('dataObj from scraper', dataObj);
@@ -62,11 +71,6 @@ async function scrape(url) {
   // Return data object
   return dataObj;
 }
-
-// Function executed with the website from QC government. This will be integrated into another file when the app is finished.
-// scrape(
-//   'https://www.quebec.ca/sante/problemes-de-sante/a-z/coronavirus-2019/situation-coronavirus-quebec/'
-// );
 
 //Export the function to be used in other files.
 module.exports = scrape;

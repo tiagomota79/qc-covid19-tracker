@@ -48,6 +48,14 @@ body {
   font-size: x-small;
 }
 
+#regionchartdiv {
+  display: none;
+}
+
+#regionchartmobilediv {
+  height: 40rem;
+}
+
 #footer {
   font-size: xx-small;
 }
@@ -92,6 +100,14 @@ body {
     position: relative;
     height: 30rem;
     font-size: small;
+  }
+
+  #regionchartdiv {
+    display: block;
+  }
+
+  #regionchartmobilediv {
+    display: none;
   }
 
   #footer {
