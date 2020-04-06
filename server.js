@@ -94,17 +94,20 @@ app.get('/alldata', (req, res) => {
 app.get('/updatedb', async (req, res) => {
   const data = await scrape(pageURL);
   const casesToday = data.total;
+  const regions = data.regions;
   const today = data.date;
   console.log('data received from scraper', data);
 
-  // Get the documents collection
-  const collection = db.collection('total-cases-per-day');
+  // Get the documents collections
+  const totalCasesPerDay = db.collection('total-cases-per-day');
+  const casesByRegion = db.collection('cases-by-region');
 
   // Update MongoDB with new data
-  collection.insertOne({ date: today, total: casesToday });
+  totalCasesPerDay.insertOne({ date: today, total: casesToday });
+  casesByRegion.insertOne({ date: today, regions });
 
-  // Get full collection to send to front-end
-  collection
+  // Get full total-cases-per-day collection to send to front-end
+  totalCasesPerDay
     .find({})
     .sort({ total: 1 })
     .toArray(function (err, docs) {
