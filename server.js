@@ -94,6 +94,7 @@ app.get('/alldata', async (req, res) => {
 });
 
 app.get('/updatedb', async (req, res) => {
+<<<<<<< HEAD
   const qcData = await scrape(qcPageURL);
   // const caData = await scrapeCanada(caPageURL);
   const casesToday = qcData.total;
@@ -117,6 +118,21 @@ app.get('/updatedb', async (req, res) => {
 
   // Get full total-cases-per-day collection to send to front-end
   await totalCasesPerDay
+=======
+  const data = await scrape(pageURL);
+  const casesToday = data.total;
+  const today = data.date;
+  console.log('data received from scraper', data);
+
+  // Get the documents collection
+  const collection = db.collection('total-cases-per-day');
+
+  // Update MongoDB with new data
+  collection.insertOne({ date: today, total: casesToday });
+
+  // Get full collection to send to front-end
+  collection
+>>>>>>> parent of 75ff231... reviewed media queries and cases by region in database
     .find({})
     .sort({ total: 1 })
     .toArray(function (err, docs) {
