@@ -92,16 +92,22 @@ function dateLong() {
 const getData = async () => {
   // Scrape data from government website and get last document on database
   const responses = await Promise.all([
-    await fetch('https://qc-covid19-tracker.herokuapp.com/scrape'),
-    await fetch('https://qc-covid19-tracker.herokuapp.com/lastdoc'),
+    await fetch('https://qc-covid19-tracker.herokuapp.com/scrape', {
+      mode: 'no-cors',
+      credentials: 'same-origin',
+    }),
+    await fetch('https://qc-covid19-tracker.herokuapp.com/lastdoc', {
+      mode: 'no-cors',
+      credentials: 'same-origin',
+    }),
   ]);
   const [scrape, lastdoc] = await Promise.all(
     responses.map(async (response) => await response.json())
   );
   const qcScrape = scrape.qc;
-  const caScrape = scrape.ca;
+  // const caScrape = scrape.ca;
   console.log('Quebec scrape', qcScrape);
-  console.log('Canada scrape', caScrape);
+  // console.log('Canada scrape', caScrape);
   console.log('lastdoc', lastdoc);
   console.log('scrape total cases', qcScrape.total);
   console.log('lastdoc total cases', lastdoc[lastdoc.length - 1].total);
@@ -128,13 +134,15 @@ const getData = async () => {
   // Compare qcScrape data with last document. If total cases number is the same, no action is performed on database. If they are different, the database is updated.
   if (qcScrape.total !== lastdoc[lastdoc.length - 1].total) {
     const update = await fetch(
-      'https://qc-covid19-tracker.herokuapp.com/updatedb'
+      'https://qc-covid19-tracker.herokuapp.com/updatedb',
+      { mode: 'no-cors', credentials: 'same-origin' }
     );
     alldata = await update.json();
     domElements();
   } else {
     const alldataFetch = await fetch(
-      'https://qc-covid19-tracker.herokuapp.com/alldata'
+      'https://qc-covid19-tracker.herokuapp.com/alldata',
+      { mode: 'no-cors', credentials: 'same-origin' }
     );
     alldata = await alldataFetch.json();
     domElements();
@@ -158,17 +166,17 @@ const getData = async () => {
     'headline',
     `confirmed COVID-19 cases (up ${diff} from yesterday).`
   );
-  createHtmlElement('percentual', 'percentual', `This represents`);
-  createHtmlElement(
-    'percentual',
-    'percentual-number',
-    `${((qcScrape.total / caScrape.total) * 100).toFixed(1)}%`
-  );
-  createHtmlElement(
-    'percentual',
-    'percentual',
-    `of all confirmed cases in Canada.`
-  );
+  // createHtmlElement('percentual', 'percentual', `This represents`);
+  // createHtmlElement(
+  //   'percentual',
+  //   'percentual-number',
+  //   `${((qcScrape.total / caScrape.total) * 100).toFixed(1)}%`
+  // );
+  // createHtmlElement(
+  //   'percentual',
+  //   'percentual',
+  //   `of all confirmed cases in Canada.`
+  // );
   createHtmlElement(
     'footer',
     'source',

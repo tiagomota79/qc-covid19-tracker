@@ -5,13 +5,12 @@ const app = express();
 const bodyParser = require('body-parser');
 
 // Import internal data and components
-const scrapers = require('./src/scraper');
+const scrape = require('./src/scraper');
+// const scrapeCanada = require('./src/scraper-canada');
 const data = require('./src/data');
 // Destructuring data from internal components
-const { scrape } = scrapers;
-const { scrapeCanada } = scrapers;
 const { qcPageURL } = data; // This is the Quebec government's page URL for the scraper
-const { caPageURL } = data; // This is the Canada government's page URL for the scraper
+// const { caPageURL } = data; // This is the Canada government's page URL for the scraper
 const { mongoURI } = data; // This is the MongoDB connection URI
 
 console.log(qcPageURL);
@@ -55,11 +54,11 @@ app.get('/', (req, res) => {
 
 app.get('/scrape', async (req, res) => {
   const qcData = await scrape(qcPageURL);
-  const caData = await scrapeCanada(caPageURL);
+  // const caData = await scrapeCanada(caPageURL);
   console.log('Data received from Quebec scraper', qcData);
-  console.log('Data received from Canada scraper', caData);
+  // console.log('Data received from Canada scraper', caData);
 
-  res.send(JSON.stringify({ qc: qcData, ca: caData }));
+  res.send(JSON.stringify({ qc: qcData }));
 });
 
 app.get('/lastdoc', async (req, res) => {
@@ -96,7 +95,7 @@ app.get('/alldata', async (req, res) => {
 
 app.get('/updatedb', async (req, res) => {
   const qcData = await scrape(qcPageURL);
-  const caData = await scrapeCanada(caPageURL);
+  // const caData = await scrapeCanada(caPageURL);
   const casesToday = qcData.total;
   const regions = qcData.regions;
   const today = qcData.date;
@@ -105,19 +104,19 @@ app.get('/updatedb', async (req, res) => {
   // Get the documents collections
   const totalCasesPerDay = db.collection('total-cases-per-day');
   const casesByRegion = db.collection('cases-by-region');
-  const canadaCasesPerDay = db.collection('canada-cases-per-day');
+  // const canadaCasesPerDay = db.collection('canada-cases-per-day');
 
   // Update MongoDB with new data
-  totalCasesPerDay.insertOne({ date: today, total: casesToday });
-  casesByRegion.insertOne({ date: today, regions });
-  canadaCasesPerDay.updateOne(
-    { date: today },
-    { $set: { date: today, total: caData.total } },
-    { upsert: true }
-  );
+  await totalCasesPerDay.insertOne({ date: today, total: casesToday });
+  await casesByRegion.insertOne({ date: today, regions });
+  // await canadaCasesPerDay.updateOne(
+  //   { date: today },
+  //   { $set: { date: today, total: caData.total } },
+  //   { upsert: true }
+  // );
 
   // Get full total-cases-per-day collection to send to front-end
-  totalCasesPerDay
+  await totalCasesPerDay
     .find({})
     .sort({ total: 1 })
     .toArray(function (err, docs) {
