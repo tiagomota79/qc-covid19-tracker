@@ -68,7 +68,7 @@ body {
   padding: 1rem;
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 600px) {
   #title {
     margin: 0;
     padding: 1rem;

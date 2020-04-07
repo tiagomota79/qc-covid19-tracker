@@ -20,7 +20,6 @@
     "express": "^4.17.1",
     "minimist": "^1.2.5",
     "mongodb": "^3.5.5",
-    "nodemon": "^2.0.2",
     "puppeteer": "^2.1.1"
   }
 }
