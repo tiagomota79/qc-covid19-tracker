@@ -25,10 +25,10 @@ body {
 }
 
 #headline,
-#mainchartdiv,
+#percentual #mainchartdiv,
 #regionchartdiv,
 #footer {
-  margin: 0.5rem;
+  padding: 0.5rem;
 }
 
 .headline {
@@ -37,6 +37,20 @@ body {
 
 .cases-headline {
   font-size: 1.5rem;
+  font-weight: bold;
+  color: dodgerblue;
+}
+
+#percentual {
+  font-size: smaller;
+  align-items: center;
+  justify-content: center;
+  background-color: aliceblue;
+  padding: 0.5rem;
+}
+
+.percentual-number {
+  font-size: larger;
   font-weight: bold;
   color: dodgerblue;
 }
@@ -54,6 +68,7 @@ body {
 
 #regionchartmobilediv {
   height: 40rem;
+  background-color: aliceblue;
 }
 
 #footer {
@@ -82,7 +97,7 @@ body {
   #mainchartdiv,
   #regionchartdiv,
   #footer {
-    margin: 1.5rem;
+    padding: 1.5rem;
   }
 
   .headline {
@@ -91,6 +106,25 @@ body {
 
   .cases-headline {
     font-size: 3rem;
+    font-weight: bold;
+    color: dodgerblue;
+  }
+
+  #percentual {
+    font-size: x-large;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: aliceblue;
+    padding: 0.5rem;
+  }
+
+  .percentual {
+    margin: 0.5rem;
+  }
+
+  .percentual-number {
+    font-size: larger;
     font-weight: bold;
     color: dodgerblue;
   }
@@ -104,6 +138,7 @@ body {
 
   #regionchartdiv {
     display: block;
+    background-color: aliceblue;
   }
 
   #regionchartmobilediv {

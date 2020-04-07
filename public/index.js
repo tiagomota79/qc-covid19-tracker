@@ -98,9 +98,12 @@ const getData = async () => {
   const [scrape, lastdoc] = await Promise.all(
     responses.map(async (response) => await response.json())
   );
-  console.log('scrape', scrape);
+  const qcScrape = scrape.qc;
+  const caScrape = scrape.ca;
+  console.log('Quebec scrape', qcScrape);
+  console.log('Canada scrape', caScrape);
   console.log('lastdoc', lastdoc);
-  console.log('scrape total cases', scrape.total);
+  console.log('scrape total cases', qcScrape.total);
   console.log('lastdoc total cases', lastdoc[lastdoc.length - 1].total);
 
   // Function to create the divs where the charts will be placed
@@ -122,8 +125,8 @@ const getData = async () => {
     createChartDiv('regionchartmobilediv'); // Adds the div where the mobile version of the regions chart will be placed
   }
 
-  // Compare scrape data with last document. If total cases number is the same, no action is performed on database. If they are different, the database is updated.
-  if (scrape.total !== lastdoc[lastdoc.length - 1].total) {
+  // Compare qcScrape data with last document. If total cases number is the same, no action is performed on database. If they are different, the database is updated.
+  if (qcScrape.total !== lastdoc[lastdoc.length - 1].total) {
     const update = await fetch(
       'https://qc-covid19-tracker.herokuapp.com/updatedb'
     );
@@ -149,11 +152,22 @@ const getData = async () => {
 
   // Create headline, source, disclaimer, sourcecode and copyright
   createHtmlElement('headline', 'headline', `As of ${dateLong()}, Quebec has`);
-  createHtmlElement('headline', 'cases-headline', scrape.total);
+  createHtmlElement('headline', 'cases-headline', qcScrape.total);
   createHtmlElement(
     'headline',
     'headline',
     `confirmed COVID-19 cases (up ${diff} from yesterday).`
+  );
+  createHtmlElement('percentual', 'percentual', `This represents`);
+  createHtmlElement(
+    'percentual',
+    'percentual-number',
+    `${((qcScrape.total / caScrape.total) * 100).toFixed(1)}%`
+  );
+  createHtmlElement(
+    'percentual',
+    'percentual',
+    `of all confirmed cases in Canada.`
   );
   createHtmlElement(
     'footer',
@@ -190,12 +204,12 @@ const getData = async () => {
   // Themes end
 
   // Add today's date as a value in the regionsMobileChart dataset
-  scrape.regionsMobile[0].date = dateLong();
+  qcScrape.regionsMobile[0].date = dateLong();
 
   // Assign data to charts
   mainChart.data = alldata;
-  regionsChart.data = scrape.regions;
-  regionsMobileChart.data = scrape.regionsMobile;
+  regionsChart.data = qcScrape.regions;
+  regionsMobileChart.data = qcScrape.regionsMobile;
   console.log('Main Chart data', mainChart.data);
   console.log('Regions Chart data', regionsChart.data);
   console.log('Regions Mobile Chart data', regionsMobileChart.data);
@@ -235,11 +249,13 @@ const getData = async () => {
   //   casesSeries.stroke = am4core.color('dodgerblue');
   // casesSeries.columns.template.fill = am4core.color('dodgerblue');
   // casesSeries.tooltipText = '{value}';
+  casesSeries.columns.template.tooltipText = '[bold]{dateX}[/]: {valueY.value}';
+  casesSeries.tooltip.pointerOrientation = 'vertical';
   casesSeries.name = 'Cases';
 
-  mainChart.cursor = new am4charts.XYCursor();
-  mainChart.cursor.snapToSeries = casesSeries;
-  mainChart.cursor.dateAxis = dateAxis;
+  // mainChart.cursor = new am4charts.XYCursor();
+  // mainChart.cursor.snapToSeries = casesSeries;
+  // mainChart.cursor.dateAxis = dateAxis;
 
   // Create regions chart series
   let pieSeries = regionsChart.series.push(new am4charts.PieSeries());
@@ -311,7 +327,7 @@ const getData = async () => {
   }
 
   // Create a series for each region
-  scrape.regions.forEach((item, index, arr) => {
+  qcScrape.regions.forEach((item, index, arr) => {
     createSeries(arr[index].region, arr[index].region);
   });
 };
