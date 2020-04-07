@@ -90,7 +90,7 @@ function dateLong() {
 
 // Get data from server and generate graph
 const getData = async () => {
-  // Scrape data from government website and get last document on database
+  // Scrape data from government website and last document on database
   const responses = await Promise.all([
     await fetch('https://qc-covid19-tracker.herokuapp.com/scrape', {
       mode: 'no-cors',
@@ -128,7 +128,7 @@ const getData = async () => {
     document.body.removeChild(spinner); // removes spinner after the data is loaded
     createChartDiv('mainchartdiv'); // Adds the div where the main chart will be placed
     createChartDiv('regionchartdiv'); // Adds the div where the regions chart will be placed
-    createChartDiv('regionchartmobilediv'); // Adds the div where the mobile version of the regions chart will be placed
+    createChartDiv('regionchartmobilediv'); // Adds the div where the regions chart will be placed
   }
 
   // Compare qcScrape data with last document. If total cases number is the same, no action is performed on database. If they are different, the database is updated.
@@ -158,7 +158,7 @@ const getData = async () => {
   title.innerHTML = 'COVID-19 situation in Quebec';
   body.prepend(title);
 
-  // Create headline, source, disclaimer, sourcecode and copyright
+  // Create headline, source and disclaimer
   createHtmlElement('headline', 'headline', `As of ${dateLong()}, Quebec has`);
   createHtmlElement('headline', 'cases-headline', qcScrape.total);
   createHtmlElement(
@@ -204,7 +204,7 @@ const getData = async () => {
   let regionsMobileChart = am4core.create(
     'regionchartmobilediv',
     am4charts.XYChart
-  ); // This is the mobile version of the secondary chart, showing the cases by region in a stacked bar chart
+  );
 
   // Themes begin
   am4core.useTheme(am4themes_animated);
@@ -230,7 +230,7 @@ const getData = async () => {
   mainChartTitle.marginBottom = 10;
   mainChartTitle.fontWeight = 'bold';
 
-  // Set input format for the dates in charts to match the date format in the database
+  // Set input format for the dates
   mainChart.dateFormatter.inputDateFormat = 'yyyy-M-d';
 
   // Create main chart axes
@@ -271,7 +271,7 @@ const getData = async () => {
   pieSeries.dataFields.category = 'region';
 
   // Change regions chart tooltip information
-  pieSeries.slices.template.tooltipText = '[bold]{category}[/]: {value.value}';
+  pieSeries.slices.template.tooltipText = '{category}: {value.value}';
 
   // Set up regions chart title
   let regionsChartTitle = regionsChart.titles.create();
