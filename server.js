@@ -6,14 +6,12 @@ const bodyParser = require('body-parser');
 
 // Import internal data and components
 const scrape = require('./src/scraper');
-// const scrapeCanada = require('./src/scraper-canada');
 const data = require('./src/data');
-// Destructuring data from internal components
-const { qcPageURL } = data; // This is the Quebec government's page URL for the scraper
-// const { caPageURL } = data; // This is the Canada government's page URL for the scraper
+// Destructuring data from internal component
+const { pageURL } = data; // This is the government's page URL for the scraper
 const { mongoURI } = data; // This is the MongoDB connection URI
 
-console.log(qcPageURL);
+console.log(pageURL);
 console.log(mongoURI);
 
 // Connect to MongoDB
@@ -53,20 +51,20 @@ app.get('/', (req, res) => {
 });
 
 app.get('/scrape', async (req, res) => {
-  const qcData = await scrape(qcPageURL);
-  // const caData = await scrapeCanada(caPageURL);
-  console.log('Data received from Quebec scraper', qcData);
-  // console.log('Data received from Canada scraper', caData);
+  const data = await scrape(pageURL);
+  const casesToday = data.total;
+  const today = data.date;
+  console.log('data received from scraper', data);
 
-  res.send(JSON.stringify({ qc: qcData }));
+  res.send(JSON.stringify(data));
 });
 
-app.get('/lastdoc', async (req, res) => {
+app.get('/lastdoc', (req, res) => {
   // Get the documents collection
   const collection = db.collection('total-cases-per-day');
 
   // Get the last document from the collection
-  await collection
+  collection
     .find({})
     .sort({ _id: -1 })
     .limit(1)
@@ -78,11 +76,11 @@ app.get('/lastdoc', async (req, res) => {
     });
 });
 
-app.get('/alldata', async (req, res) => {
+app.get('/alldata', (req, res) => {
   // Get the documents collection
   const collection = db.collection('total-cases-per-day');
   // Find some documents
-  await collection
+  collection
     .find({})
     .sort({ total: 1 })
     .toArray(function (err, docs) {
@@ -94,7 +92,6 @@ app.get('/alldata', async (req, res) => {
 });
 
 app.get('/updatedb', async (req, res) => {
-<<<<<<< HEAD
   const qcData = await scrape(qcPageURL);
   // const caData = await scrapeCanada(caPageURL);
   const casesToday = qcData.total;
@@ -105,34 +102,14 @@ app.get('/updatedb', async (req, res) => {
   // Get the documents collections
   const totalCasesPerDay = db.collection('total-cases-per-day');
   const casesByRegion = db.collection('cases-by-region');
-  // const canadaCasesPerDay = db.collection('canada-cases-per-day');
 
   // Update MongoDB with new data
-  await totalCasesPerDay.insertOne({ date: today, total: casesToday });
-  await casesByRegion.insertOne({ date: today, regions });
-  // await canadaCasesPerDay.updateOne(
-  //   { date: today },
-  //   { $set: { date: today, total: caData.total } },
-  //   { upsert: true }
-  // );
+  totalCasesPerDay.insertOne({ date: today, total: casesToday });
+  casesByRegion.insertOne({ date: today, regions });
 
   // Get full total-cases-per-day collection to send to front-end
+
   await totalCasesPerDay
-=======
-  const data = await scrape(pageURL);
-  const casesToday = data.total;
-  const today = data.date;
-  console.log('data received from scraper', data);
-
-  // Get the documents collection
-  const collection = db.collection('total-cases-per-day');
-
-  // Update MongoDB with new data
-  collection.insertOne({ date: today, total: casesToday });
-
-  // Get full collection to send to front-end
-  collection
->>>>>>> parent of 75ff231... reviewed media queries and cases by region in database
     .find({})
     .sort({ total: 1 })
     .toArray(function (err, docs) {

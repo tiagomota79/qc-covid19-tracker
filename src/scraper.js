@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+const url = require;
 
 async function scrape(url) {
   //Initiate Puppeteer browser and direct to the URL
@@ -6,7 +7,7 @@ async function scrape(url) {
   const page = await browser.newPage();
   await page.goto(url);
 
-  // Get total cases from the Quebec government webpage, remove the whitespace and convert to number
+  // Get total cases from the government webpage, remove the whitespace and convert to number
   const total = await page.evaluate(() => {
     const cellContents = document.querySelector(
       '.contenttable tbody tr:last-of-type td:last-of-type'
@@ -55,7 +56,9 @@ async function scrape(url) {
     regionsMobile: tableMobile,
   };
 
-  console.log('dataObj from QC scraper', dataObj);
+  console.log('dataObj from scraper', dataObj);
+  // console.log('table', table);
+  // console.log('table object', tableObject);
 
   //Error catching
   try {

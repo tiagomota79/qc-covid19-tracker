@@ -90,26 +90,17 @@ function dateLong() {
 
 // Get data from server and generate graph
 const getData = async () => {
-  // Scrape data from government website and last document on database
+  // Scrape data from government website and get last document on database
   const responses = await Promise.all([
-    await fetch('https://qc-covid19-tracker.herokuapp.com/scrape', {
-      mode: 'no-cors',
-      credentials: 'same-origin',
-    }),
-    await fetch('https://qc-covid19-tracker.herokuapp.com/lastdoc', {
-      mode: 'no-cors',
-      credentials: 'same-origin',
-    }),
+    await fetch('https://qc-covid19-tracker.herokuapp.com/scrape'),
+    await fetch('https://qc-covid19-tracker.herokuapp.com/lastdoc'),
   ]);
   const [scrape, lastdoc] = await Promise.all(
     responses.map(async (response) => await response.json())
   );
-  const qcScrape = scrape.qc;
-  // const caScrape = scrape.ca;
-  console.log('Quebec scrape', qcScrape);
-  // console.log('Canada scrape', caScrape);
+  console.log('scrape', scrape);
   console.log('lastdoc', lastdoc);
-  console.log('scrape total cases', qcScrape.total);
+  console.log('scrape total cases', scrape.total);
   console.log('lastdoc total cases', lastdoc[lastdoc.length - 1].total);
 
   // Function to create the divs where the charts will be placed
@@ -128,21 +119,19 @@ const getData = async () => {
     document.body.removeChild(spinner); // removes spinner after the data is loaded
     createChartDiv('mainchartdiv'); // Adds the div where the main chart will be placed
     createChartDiv('regionchartdiv'); // Adds the div where the regions chart will be placed
-    createChartDiv('regionchartmobilediv'); // Adds the div where the regions chart will be placed
+    createChartDiv('regionchartmobilediv'); // Adds the div where the mobile version of the regions chart will be placed
   }
 
-  // Compare qcScrape data with last document. If total cases number is the same, no action is performed on database. If they are different, the database is updated.
-  if (qcScrape.total !== lastdoc[lastdoc.length - 1].total) {
+  // Compare scrape data with last document. If total cases number is the same, no action is performed on database. If they are different, the database is updated.
+  if (scrape.total !== lastdoc[lastdoc.length - 1].total) {
     const update = await fetch(
-      'https://qc-covid19-tracker.herokuapp.com/updatedb',
-      { mode: 'no-cors', credentials: 'same-origin' }
+      'https://qc-covid19-tracker.herokuapp.com/updatedb'
     );
     alldata = await update.json();
     domElements();
   } else {
     const alldataFetch = await fetch(
-      'https://qc-covid19-tracker.herokuapp.com/alldata',
-      { mode: 'no-cors', credentials: 'same-origin' }
+      'https://qc-covid19-tracker.herokuapp.com/alldata'
     );
     alldata = await alldataFetch.json();
     domElements();
@@ -158,25 +147,14 @@ const getData = async () => {
   title.innerHTML = 'COVID-19 situation in Quebec';
   body.prepend(title);
 
-  // Create headline, source and disclaimer
+  // Create headline, source, disclaimer, sourcecode and copyright
   createHtmlElement('headline', 'headline', `As of ${dateLong()}, Quebec has`);
-  createHtmlElement('headline', 'cases-headline', qcScrape.total);
+  createHtmlElement('headline', 'cases-headline', scrape.total);
   createHtmlElement(
     'headline',
     'headline',
     `confirmed COVID-19 cases (up ${diff} from yesterday).`
   );
-  // createHtmlElement('percentual', 'percentual', `This represents`);
-  // createHtmlElement(
-  //   'percentual',
-  //   'percentual-number',
-  //   `${((qcScrape.total / caScrape.total) * 100).toFixed(1)}%`
-  // );
-  // createHtmlElement(
-  //   'percentual',
-  //   'percentual',
-  //   `of all confirmed cases in Canada.`
-  // );
   createHtmlElement(
     'footer',
     'source',
@@ -204,7 +182,7 @@ const getData = async () => {
   let regionsMobileChart = am4core.create(
     'regionchartmobilediv',
     am4charts.XYChart
-  );
+  ); // This is the mobile version of the secondary chart, showing the cases by region in a stacked bar chart
 
   // Themes begin
   am4core.useTheme(am4themes_animated);
@@ -212,12 +190,12 @@ const getData = async () => {
   // Themes end
 
   // Add today's date as a value in the regionsMobileChart dataset
-  qcScrape.regionsMobile[0].date = dateLong();
+  scrape.regionsMobile[0].date = dateLong();
 
   // Assign data to charts
   mainChart.data = alldata;
-  regionsChart.data = qcScrape.regions;
-  regionsMobileChart.data = qcScrape.regionsMobile;
+  regionsChart.data = scrape.regions;
+  regionsMobileChart.data = scrape.regionsMobile;
   console.log('Main Chart data', mainChart.data);
   console.log('Regions Chart data', regionsChart.data);
   console.log('Regions Mobile Chart data', regionsMobileChart.data);
@@ -230,7 +208,7 @@ const getData = async () => {
   mainChartTitle.marginBottom = 10;
   mainChartTitle.fontWeight = 'bold';
 
-  // Set input format for the dates
+  // Set input format for the dates in charts to match the date format in the database
   mainChart.dateFormatter.inputDateFormat = 'yyyy-M-d';
 
   // Create main chart axes
@@ -257,13 +235,11 @@ const getData = async () => {
   //   casesSeries.stroke = am4core.color('dodgerblue');
   // casesSeries.columns.template.fill = am4core.color('dodgerblue');
   // casesSeries.tooltipText = '{value}';
-  casesSeries.columns.template.tooltipText = '[bold]{dateX}[/]: {valueY.value}';
-  casesSeries.tooltip.pointerOrientation = 'vertical';
   casesSeries.name = 'Cases';
 
-  // mainChart.cursor = new am4charts.XYCursor();
-  // mainChart.cursor.snapToSeries = casesSeries;
-  // mainChart.cursor.dateAxis = dateAxis;
+  mainChart.cursor = new am4charts.XYCursor();
+  mainChart.cursor.snapToSeries = casesSeries;
+  mainChart.cursor.dateAxis = dateAxis;
 
   // Create regions chart series
   let pieSeries = regionsChart.series.push(new am4charts.PieSeries());
@@ -271,7 +247,7 @@ const getData = async () => {
   pieSeries.dataFields.category = 'region';
 
   // Change regions chart tooltip information
-  pieSeries.slices.template.tooltipText = '{category}: {value.value}';
+  pieSeries.slices.template.tooltipText = '[bold]{category}[/]: {value.value}';
 
   // Set up regions chart title
   let regionsChartTitle = regionsChart.titles.create();
@@ -335,7 +311,7 @@ const getData = async () => {
   }
 
   // Create a series for each region
-  qcScrape.regions.forEach((item, index, arr) => {
+  scrape.regions.forEach((item, index, arr) => {
     createSeries(arr[index].region, arr[index].region);
   });
 };
