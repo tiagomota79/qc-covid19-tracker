@@ -62,12 +62,12 @@ app.get('/scrape', async (req, res) => {
   res.send(JSON.stringify({ qc: qcData, ca: caData }));
 });
 
-app.get('/lastdoc', (req, res) => {
+app.get('/lastdoc', async (req, res) => {
   // Get the documents collection
   const collection = db.collection('total-cases-per-day');
 
   // Get the last document from the collection
-  collection
+  await collection
     .find({})
     .sort({ _id: -1 })
     .limit(1)
@@ -79,11 +79,11 @@ app.get('/lastdoc', (req, res) => {
     });
 });
 
-app.get('/alldata', (req, res) => {
+app.get('/alldata', async (req, res) => {
   // Get the documents collection
   const collection = db.collection('total-cases-per-day');
   // Find some documents
-  collection
+  await collection
     .find({})
     .sort({ total: 1 })
     .toArray(function (err, docs) {
