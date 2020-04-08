@@ -118,6 +118,8 @@ const getData = async () => {
   function domElements() {
     document.body.removeChild(spinner); // removes spinner after the data is loaded
     createChartDiv('mainchartdiv'); // Adds the div where the main chart will be placed
+    createChartDiv('casesbyage'); // Adds the div where the cases by age group chart will be placed
+    createChartDiv('casesbyagemobile'); // Adds the div where the mobile version of the cases by age group chart will be placed
     createChartDiv('regionchartdiv'); // Adds the div where the regions chart will be placed
     createChartDiv('regionchartmobilediv'); // Adds the div where the mobile version of the regions chart will be placed
   }
@@ -178,27 +180,39 @@ const getData = async () => {
 
   // Create charts instances
   let mainChart = am4core.create('mainchartdiv', am4charts.XYChart); // This is the main chart, showing the cumulative cases by episode date
-  let regionsChart = am4core.create('regionchartdiv', am4charts.PieChart); // This is the secondary chart, showing the cases by region
+  let ageGroupChart = am4core.create('casesbyage', am4charts.PieChart); // This is the seconda chart, showing the cases by age group
+  let ageGroupMobileChart = am4core.create(
+    'casesbyagemobile',
+    am4charts.XYChart
+  ); // This is the mobile version of the seconda chart, showing the cases by age group in a stacked bar chart
+  let regionsChart = am4core.create('regionchartdiv', am4charts.PieChart); // This is the third chart, showing the cases by region
   let regionsMobileChart = am4core.create(
     'regionchartmobilediv',
     am4charts.XYChart
-  ); // This is the mobile version of the secondary chart, showing the cases by region in a stacked bar chart
+  ); // This is the mobile version of the third chart, showing the cases by region in a stacked bar chart
 
   // Themes begin
   am4core.useTheme(am4themes_animated);
   am4core.useTheme(am4themes_material);
   // Themes end
 
+  // Add today's date as a value in the ageGroupMobileChart dataset
+  scrape.casesByAgeMobile[0].date = dateLong();
+
   // Add today's date as a value in the regionsMobileChart dataset
   scrape.regionsMobile[0].date = dateLong();
 
   // Assign data to charts
   mainChart.data = alldata;
+  ageGroupChart.data = scrape.casesByAge;
+  ageGroupMobileChart.data = scrape.casesByAgeMobile;
   regionsChart.data = scrape.regions;
   regionsMobileChart.data = scrape.regionsMobile;
   console.log('Main Chart data', mainChart.data);
   console.log('Regions Chart data', regionsChart.data);
   console.log('Regions Mobile Chart data', regionsMobileChart.data);
+  console.log('Age Group Chart data', ageGroupChart.data);
+  console.log('Age Group Mobile Chart data', ageGroupMobileChart.data);
 
   // Set up main chart title
   let mainChartTitle = mainChart.titles.create();
@@ -234,20 +248,95 @@ const getData = async () => {
   casesSeries.fillOpacity = 1;
   //   casesSeries.stroke = am4core.color('dodgerblue');
   // casesSeries.columns.template.fill = am4core.color('dodgerblue');
-  // casesSeries.tooltipText = '{value}';
+  casesSeries.columns.template.tooltipText = '[bold]{dateX}[/]: {valueY}';
+  casesSeries.tooltip.pointerOrientation = 'vertical';
   casesSeries.name = 'Cases';
 
-  mainChart.cursor = new am4charts.XYCursor();
-  mainChart.cursor.snapToSeries = casesSeries;
-  mainChart.cursor.dateAxis = dateAxis;
+  // Create cases by age group chart series
+  let ageGroupPieSeries = ageGroupChart.series.push(new am4charts.PieSeries());
+  ageGroupPieSeries.dataFields.value = 'cases';
+  ageGroupPieSeries.dataFields.category = 'ageGroup';
+
+  // Change cases by age group chart tooltip information
+  ageGroupPieSeries.slices.template.tooltipText =
+    '[bold]{category}[/]: {value}%';
+
+  // Set up cases by age group chart title
+  let ageGroupChartTitle = ageGroupChart.titles.create();
+  ageGroupChartTitle.text = 'Cases by age group';
+  ageGroupChartTitle.fontSize = '1rem';
+  ageGroupChartTitle.marginTop = 30;
+  ageGroupChartTitle.marginBottom = 10;
+  ageGroupChartTitle.fontWeight = 'bold';
+
+  // Create mobile cases by age group chart
+  // Mobile chart axes
+  let ageGroupMobileCategoryAxis = ageGroupMobileChart.xAxes.push(
+    new am4charts.CategoryAxis()
+  );
+  ageGroupMobileCategoryAxis.dataFields.category = 'date';
+  ageGroupMobileCategoryAxis.renderer.grid.template.location = 0;
+  ageGroupMobileCategoryAxis.renderer.grid.template.strokeOpacity = 0;
+
+  let ageGroupMobileValueAxis = ageGroupMobileChart.yAxes.push(
+    new am4charts.ValueAxis()
+  );
+  ageGroupMobileValueAxis.renderer.inside = true;
+  ageGroupMobileValueAxis.renderer.labels.template.disabled = true;
+  ageGroupMobileValueAxis.min = 0;
+  ageGroupMobileValueAxis.renderer.grid.template.strokeOpacity = 0;
+
+  // Set up mobile regions chart title
+  let ageGroupMobileChartTitle = ageGroupMobileChart.titles.create();
+  ageGroupMobileChartTitle.text = 'Cases by age group';
+  ageGroupMobileChartTitle.fontSize = '1rem';
+  ageGroupMobileChartTitle.marginTop = 30;
+  ageGroupMobileChartTitle.marginBottom = 10;
+  ageGroupMobileChartTitle.fontWeight = 'bold';
+
+  // Function to create series for the mobile regions chart
+  function createAgeGroupSeries(field, name) {
+    // Set up series
+    let series = ageGroupMobileChart.series.push(new am4charts.ColumnSeries());
+    series.name = name;
+    series.dataFields.valueY = field;
+    series.dataFields.categoryX = 'date';
+    series.sequencedInterpolation = true;
+
+    // Make it stacked
+    series.stacked = true;
+
+    // Configure columns
+    series.columns.template.width = am4core.percent(60);
+    series.columns.template.tooltipText =
+      '[font-size:0.7rem bold]{name}[font-size:0.7rem]: {valueY}';
+    series.tooltip.pointerOrientation = 'vertical';
+
+    // Add label
+    let labelBullet = series.bullets.push(new am4charts.LabelBullet());
+    labelBullet.label.text = '[bold]{name}[/]: {valueY}';
+    labelBullet.label.fontSize = '0.5rem';
+    labelBullet.locationY = 0.5;
+    labelBullet.label.hideOversized = true;
+
+    return series;
+  }
+
+  // Create a series for each age group
+  scrape.casesByAge.forEach((item, index, arr) => {
+    createAgeGroupSeries(arr[index].ageGroup, arr[index].ageGroup);
+  });
+
+  //////
 
   // Create regions chart series
-  let pieSeries = regionsChart.series.push(new am4charts.PieSeries());
-  pieSeries.dataFields.value = 'cases';
-  pieSeries.dataFields.category = 'region';
+  let regionsPieSeries = regionsChart.series.push(new am4charts.PieSeries());
+  regionsPieSeries.dataFields.value = 'cases';
+  regionsPieSeries.dataFields.category = 'region';
 
   // Change regions chart tooltip information
-  pieSeries.slices.template.tooltipText = '[bold]{category}[/]: {value.value}';
+  regionsPieSeries.slices.template.tooltipText =
+    '[bold]{category}[/]: {value.value}';
 
   // Set up regions chart title
   let regionsChartTitle = regionsChart.titles.create();
@@ -283,7 +372,7 @@ const getData = async () => {
   mobileRegionsChartTitle.fontWeight = 'bold';
 
   // Function to create series for the mobile regions chart
-  function createSeries(field, name) {
+  function createRegionsSeries(field, name) {
     // Set up series
     let series = regionsMobileChart.series.push(new am4charts.ColumnSeries());
     series.name = name;
@@ -312,7 +401,7 @@ const getData = async () => {
 
   // Create a series for each region
   scrape.regions.forEach((item, index, arr) => {
-    createSeries(arr[index].region, arr[index].region);
+    createRegionsSeries(arr[index].region, arr[index].region);
   });
 };
 

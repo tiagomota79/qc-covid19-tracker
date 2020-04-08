@@ -92,12 +92,11 @@ app.get('/alldata', (req, res) => {
 });
 
 app.get('/updatedb', async (req, res) => {
-  const qcData = await scrape(qcPageURL);
-  // const caData = await scrapeCanada(caPageURL);
-  const casesToday = qcData.total;
-  const regions = qcData.regions;
-  const today = qcData.date;
-  console.log('Data received from Quebec scraper', qcData);
+  const data = await scrape(pageURL);
+  const casesToday = data.total;
+  const regions = data.regions;
+  const today = data.date;
+  console.log('data received from scraper', data);
 
   // Get the documents collections
   const totalCasesPerDay = db.collection('total-cases-per-day');
@@ -108,8 +107,7 @@ app.get('/updatedb', async (req, res) => {
   casesByRegion.insertOne({ date: today, regions });
 
   // Get full total-cases-per-day collection to send to front-end
-
-  await totalCasesPerDay
+  totalCasesPerDay
     .find({})
     .sort({ total: 1 })
     .toArray(function (err, docs) {

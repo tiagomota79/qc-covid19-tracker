@@ -26,9 +26,9 @@ body {
 
 #headline,
 #mainchartdiv,
-#regionchartdiv,
+#casesbyage #regionchartdiv,
 #footer {
-  margin: 0.5rem;
+  padding: 0.5rem;
 }
 
 .headline {
@@ -42,17 +42,25 @@ body {
 }
 
 #mainchartdiv,
+#casesbyage,
 #regionchartdiv {
   position: relative;
   height: 20rem;
   font-size: x-small;
 }
 
-#regionchartdiv {
+#mainchartdiv,
+#regionchartmobilediv {
+  background-color: aliceblue;
+}
+
+#regionchartdiv,
+#casesbyage {
   display: none;
 }
 
-#regionchartmobilediv {
+#regionchartmobilediv,
+#casesbyagemobile {
   height: 40rem;
 }
 
@@ -80,9 +88,10 @@ body {
 
   #headline,
   #mainchartdiv,
+  #casesbyage,
   #regionchartdiv,
   #footer {
-    margin: 1.5rem;
+    padding: 1.5rem;
   }
 
   .headline {
@@ -96,16 +105,24 @@ body {
   }
 
   #mainchartdiv,
+  #casesbyage,
   #regionchartdiv {
     position: relative;
     height: 30rem;
     font-size: small;
   }
 
+  #mainchartdiv,
+  #regionchartdiv {
+    background-color: aliceblue;
+  }
+
+  #casesbyage,
   #regionchartdiv {
     display: block;
   }
 
+  #casesbyagemobile,
   #regionchartmobilediv {
     display: none;
   }

@@ -1,5 +1,4 @@
 const puppeteer = require('puppeteer');
-const url = require;
 
 async function scrape(url) {
   //Initiate Puppeteer browser and direct to the URL
@@ -15,9 +14,11 @@ async function scrape(url) {
     return Number(cellContents.replace(/\s/g, ''));
   });
 
-  // Get full table from government webpage
-  const table = await page.evaluate(() => {
-    const rows = document.querySelectorAll('.contenttable tbody tr');
+  // Get full cases table from government webpage
+  const casesTable = await page.evaluate(() => {
+    const rows = document.querySelectorAll(
+      '#c50214 > div > div > div > table > tbody tr'
+    );
     return Array.from(rows, (row) => {
       const columns = row.querySelectorAll('td');
       return Array.from(columns, (column) => column.innerText);
@@ -25,24 +26,52 @@ async function scrape(url) {
   });
 
   // Remove last element from table - the total cases
-  table.pop();
+  casesTable.splice(casesTable.length - 3, 3);
 
   // Transform table array into javascript object, removing the numbers from the region name and transforming the cases string to number
-  let tableObject = [];
-  table.forEach((item, index, arr) => {
-    tableObject.push({
+  let casesTableObject = [];
+  casesTable.forEach((item, index, arr) => {
+    casesTableObject.push({
       region: arr[index][0].substring(5),
       cases: Number(arr[index][1].replace(/\s/g, '')),
     });
   });
 
   // Convert the table object into a single object with region names for keys and cases for values, to use in mobile version of chart
-  let tableMobile = [];
-  let tableMobileObject = {};
-  tableObject.forEach((item, index, arr) => {
-    tableMobileObject[arr[index].region] = arr[index].cases;
+  let casesTableMobile = [];
+  let casesTableMobileObject = {};
+  casesTableObject.forEach((item, index, arr) => {
+    casesTableMobileObject[arr[index].region] = arr[index].cases;
   });
-  tableMobile.push(tableMobileObject);
+  casesTableMobile.push(casesTableMobileObject);
+
+  // Get cases by age group table
+  const casesByAgeTable = await page.evaluate(() => {
+    const rows = document.querySelectorAll(
+      '#c50213 > div > div > div > table > tbody tr'
+    );
+    return Array.from(rows, (row) => {
+      const columns = row.querySelectorAll('td');
+      return Array.from(columns, (column) => column.innerText);
+    });
+  });
+
+  // Transform cases by age table array into javascript object, removing the numbers from the region name and transforming the cases string to number
+  let casesByAgeTableObject = [];
+  casesByAgeTable.forEach((item, index, arr) => {
+    casesByAgeTableObject.push({
+      ageGroup: arr[index][0],
+      cases: Number(arr[index][1].replace(/,/g, '.').replace(/(\s%)/g, '')),
+    });
+  });
+
+  // Convert the cases by age group table object into a single object with region names for keys and cases for values, to use in mobile version of chart
+  let casesByAgeTableMobile = [];
+  let casesByAgeTableMobileObject = {};
+  casesByAgeTableObject.forEach((item, index, arr) => {
+    casesByAgeTableMobileObject[arr[index].ageGroup] = arr[index].cases;
+  });
+  casesByAgeTableMobile.push(casesByAgeTableMobileObject);
 
   // Gets today's date in YYYY-MM-DD format
   const date = `${new Date().getFullYear()}-${
@@ -52,13 +81,13 @@ async function scrape(url) {
   dataObj = {
     date: date,
     total,
-    regions: tableObject,
-    regionsMobile: tableMobile,
+    regions: casesTableObject,
+    regionsMobile: casesTableMobile,
+    casesByAge: casesByAgeTableObject,
+    casesByAgeMobile: casesByAgeTableMobile,
   };
 
   console.log('dataObj from scraper', dataObj);
-  // console.log('table', table);
-  // console.log('table object', tableObject);
 
   //Error catching
   try {
