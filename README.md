@@ -21,10 +21,10 @@ When I set up to build this app, several days with confirmed cases in Quebec had
 
 The bulk of the work is done by the server, scraping data from the website, and by the amCharts module. The result is, for the end user, a static page, thus a simple HTML/JS/CSS structure suffices to have the information on the page.
 
-### Known issues
-
-The amCharts has a complicated relationship with dates on a XY chart. While the bars correctly show the evolution of cases from the data in the database, the dates on the X axis don't line up with the actual bar from that date, and the cursor don't show the actual value from the database, but a weird average.
-
 ### **Screenshots**
 
+Desktop version
 ![screenshot](screenshots/screenshot.png)
+
+Mobile version
+![screenshot](screenshots/screenshot_mobile.png)
