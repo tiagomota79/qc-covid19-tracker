@@ -118,6 +118,7 @@ const getData = async () => {
   function domElements() {
     document.body.removeChild(spinner); // removes spinner after the data is loaded
     createChartDiv('mainchartdiv'); // Adds the div where the main chart will be placed
+    createChartDiv('rateofchange'); // Adds the div where the rate of change chart will be placed
     createChartDiv('casesbyage'); // Adds the div where the cases by age group chart will be placed
     createChartDiv('casesbyagemobile'); // Adds the div where the mobile version of the cases by age group chart will be placed
     createChartDiv('regionchartdiv'); // Adds the div where the regions chart will be placed
@@ -139,9 +140,17 @@ const getData = async () => {
     domElements();
   }
 
+  // Get rate of change - difference between one day's cases and the previous day's cases
+  let rateOfChange = [];
+  for (let i = 0; i < alldata.length - 1; i++) {
+    rateOfChange[i] = {
+      date: alldata[i + 1].date,
+      total: alldata[i + 1].total - alldata[i].total,
+    };
+  }
+
   // Get difference bewteen today's cases and yesterday's cases
-  const diff =
-    alldata[alldata.length - 1].total - alldata[alldata.length - 2].total;
+  const diff = rateOfChange[rateOfChange.length - 1].total;
 
   // Add title to the #title div
   const title = document.createElement('H1');
@@ -174,12 +183,13 @@ const getData = async () => {
   createHtmlElement(
     'footer',
     'sourcecode',
-    `<a href="https://github.com/tiagomota79/qc-covid19-tracker">GitHub Repository</a>`
+    `<svg height="32" id="github" viewBox="0 0 16 16" version="1.1" width="32" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg><a id="github_link" href="https://github.com/tiagomota79/qc-covid19-tracker">GitHub Repository</a>`
   );
   createHtmlElement('footer', 'copyright', '© 2020 Tiago Mota');
 
   // Create charts instances
   let mainChart = am4core.create('mainchartdiv', am4charts.XYChart); // This is the main chart, showing the cumulative cases by episode date
+  let rateOfChangeChart = am4core.create('rateofchange', am4charts.XYChart); // This is the rate of change chart, showing number of new cases per day
   let ageGroupChart = am4core.create('casesbyage', am4charts.PieChart); // This is the seconda chart, showing the cases by age group
   let ageGroupMobileChart = am4core.create(
     'casesbyagemobile',
@@ -204,11 +214,13 @@ const getData = async () => {
 
   // Assign data to charts
   mainChart.data = alldata;
+  rateOfChangeChart.data = rateOfChange;
   ageGroupChart.data = scrape.casesByAge;
   ageGroupMobileChart.data = scrape.casesByAgeMobile;
   regionsChart.data = scrape.regions;
   regionsMobileChart.data = scrape.regionsMobile;
   console.log('Main Chart data', mainChart.data);
+  console.log('Rate of change data', rateOfChangeChart.data);
   console.log('Regions Chart data', regionsChart.data);
   console.log('Regions Mobile Chart data', regionsMobileChart.data);
   console.log('Age Group Chart data', ageGroupChart.data);
@@ -251,6 +263,50 @@ const getData = async () => {
   casesSeries.columns.template.tooltipText = '[bold]{dateX}[/]: {valueY}';
   casesSeries.tooltip.pointerOrientation = 'vertical';
   casesSeries.name = 'Cases';
+
+  //////
+  // Set up rate of change chart title
+  let rateOfChangeChartTitle = rateOfChangeChart.titles.create();
+  rateOfChangeChartTitle.text =
+    '[bold]Rate of change[/]\n(new episodes per day)';
+  rateOfChangeChartTitle.fontSize = '1rem';
+  rateOfChangeChartTitle.marginTop = 30;
+  rateOfChangeChartTitle.marginBottom = 10;
+  rateOfChangeChartTitle.align = 'center';
+  // rateOfChangeChartTitle.fontWeight = 'bold';
+
+  // Set input format for the dates in charts to match the date format in the database
+  rateOfChangeChart.dateFormatter.inputDateFormat = 'yyyy-M-d';
+
+  // Create rate of change chart axes
+  let rocDateAxis = rateOfChangeChart.xAxes.push(new am4charts.DateAxis());
+  rocDateAxis.renderer.minGridDistance = 50;
+  rocDateAxis.renderer.grid.template.strokeOpacity = 0;
+  rocDateAxis.renderer.labels.template.location = 0;
+  rocDateAxis.renderer.labels.template.horizontalCenter = 'right';
+  rocDateAxis.renderer.labels.template.verticalCenter = 'middle';
+  rocDateAxis.renderer.labels.template.rotation = 270;
+  rocDateAxis.baseInterval = {
+    timeUnit: 'day',
+    count: 1,
+  };
+
+  let rocCasesAxis = rateOfChangeChart.yAxes.push(new am4charts.ValueAxis());
+
+  // Create rate of change chart series
+  let rocCasesSeries = rateOfChangeChart.series.push(
+    new am4charts.ColumnSeries()
+  );
+  rocCasesSeries.dataFields.dateX = 'date';
+  rocCasesSeries.dataFields.valueY = 'total';
+  //   rocCasesSeries.strokeWidth = 1.5;
+  rocCasesSeries.fillOpacity = 1;
+  //   rocCasesSeries.stroke = am4core.color('dodgerblue');
+  // rocCasesSeries.columns.template.fill = am4core.color('dodgerblue');
+  rocCasesSeries.columns.template.tooltipText = '[bold]{dateX}[/]: {valueY}';
+  rocCasesSeries.tooltip.pointerOrientation = 'vertical';
+  rocCasesSeries.name = 'Cases';
+  //////
 
   // Create cases by age group chart series
   let ageGroupPieSeries = ageGroupChart.series.push(new am4charts.PieSeries());

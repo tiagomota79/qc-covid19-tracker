@@ -95,16 +95,31 @@ app.get('/updatedb', async (req, res) => {
   const data = await scrape(pageURL);
   const casesToday = data.total;
   const regions = data.regions;
+  const casesByAge = data.casesByAge;
   const today = data.date;
   console.log('data received from scraper', data);
 
   // Get the documents collections
   const totalCasesPerDay = db.collection('total-cases-per-day');
   const casesByRegion = db.collection('cases-by-region');
+  const casesByAgeGroup = db.collection('cases-by-age-group');
 
   // Update MongoDB with new data
-  totalCasesPerDay.insertOne({ date: today, total: casesToday });
-  casesByRegion.insertOne({ date: today, regions });
+  totalCasesPerDay.updateOne(
+    { date: today },
+    { $set: { date: today, total: casesToday } },
+    { upsert: true }
+  );
+  casesByRegion.updateOne(
+    { date: today },
+    { $set: { date: today, regions } },
+    { upsert: true }
+  );
+  casesByAgeGroup.updateOne(
+    { date: today },
+    { $set: { date: today, casesByAge } },
+    { upsert: true }
+  );
 
   // Get full total-cases-per-day collection to send to front-end
   totalCasesPerDay

@@ -26,7 +26,8 @@ body {
 
 #headline,
 #mainchartdiv,
-#casesbyage #regionchartdiv,
+#casesbyage,
+#regionchartdiv,
 #footer {
   padding: 0.5rem;
 }
@@ -42,6 +43,7 @@ body {
 }
 
 #mainchartdiv,
+#rateofchange,
 #casesbyage,
 #regionchartdiv {
   position: relative;
@@ -50,7 +52,8 @@ body {
 }
 
 #mainchartdiv,
-#regionchartmobilediv {
+#casesbyagemobile,
+#footer {
   background-color: aliceblue;
 }
 
@@ -68,15 +71,44 @@ body {
   font-size: xx-small;
 }
 
-.source {
-  margin-bottom: 1rem;
-}
-
 .disclaimer {
   padding: 1rem;
 }
 
-@media only screen and (min-width: 600px) {
+.source,
+.sourcecode {
+  background-color: slategrey;
+  padding: 0.2rem;
+  border-radius: 50rem;
+  width: 7rem;
+  margin: auto;
+  color: white;
+}
+
+.source a {
+  text-decoration: none;
+  color: white;
+}
+
+.sourcecode {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#github {
+  fill: white;
+}
+
+#github_link {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+  text-align: left;
+  padding-left: 0.4rem;
+}
+
+@media only screen and (min-width: 950px) {
   #title {
     margin: 0;
     padding: 1rem;
@@ -105,6 +137,7 @@ body {
   }
 
   #mainchartdiv,
+  #rateofchange,
   #casesbyage,
   #regionchartdiv {
     position: relative;
@@ -113,7 +146,8 @@ body {
   }
 
   #mainchartdiv,
-  #regionchartdiv {
+  #casesbyage,
+  #footer {
     background-color: aliceblue;
   }
 
@@ -131,11 +165,20 @@ body {
     font-size: smaller;
   }
 
-  .source {
-    margin-bottom: 1rem;
+  .source,
+  .sourcecode {
+    width: 11rem;
   }
 
   .disclaimer {
     padding: 1rem;
+  }
+
+  .sourcecode {
+    padding: 0.3rem;
+  }
+
+  #github_link {
+    padding: 0.4rem;
   }
 }
