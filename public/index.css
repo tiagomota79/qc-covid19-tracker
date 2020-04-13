@@ -98,6 +98,7 @@ body {
 
 #github {
   fill: white;
+  height: 100%;
 }
 
 #github_link {
@@ -179,6 +180,6 @@ body {
   }
 
   #github_link {
-    padding: 0.4rem;
+    padding: 0.5rem;
   }
 }

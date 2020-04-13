@@ -226,6 +226,7 @@ const getData = async () => {
   console.log('Age Group Chart data', ageGroupChart.data);
   console.log('Age Group Mobile Chart data', ageGroupMobileChart.data);
 
+  // MAIN CHART STARTS HERE
   // Set up main chart title
   let mainChartTitle = mainChart.titles.create();
   mainChartTitle.text = 'Cumulative Cases by Episode Date';
@@ -263,8 +264,9 @@ const getData = async () => {
   casesSeries.columns.template.tooltipText = '[bold]{dateX}[/]: {valueY}';
   casesSeries.tooltip.pointerOrientation = 'vertical';
   casesSeries.name = 'Cases';
+  // MAIN CHART ENDS HERE
 
-  //////
+  // RATE OF CHANGE CHART STARTS HERE
   // Set up rate of change chart title
   let rateOfChangeChartTitle = rateOfChangeChart.titles.create();
   rateOfChangeChartTitle.text =
@@ -306,8 +308,9 @@ const getData = async () => {
   rocCasesSeries.columns.template.tooltipText = '[bold]{dateX}[/]: {valueY}';
   rocCasesSeries.tooltip.pointerOrientation = 'vertical';
   rocCasesSeries.name = 'Cases';
-  //////
+  // RATE OF CHANGE CHART ENDS HERE
 
+  // CASES BY AGE GROUP CHART STARTS HERE
   // Create cases by age group chart series
   let ageGroupPieSeries = ageGroupChart.series.push(new am4charts.PieSeries());
   ageGroupPieSeries.dataFields.value = 'cases';
@@ -324,8 +327,9 @@ const getData = async () => {
   ageGroupChartTitle.marginTop = 30;
   ageGroupChartTitle.marginBottom = 10;
   ageGroupChartTitle.fontWeight = 'bold';
+  // CASES BY AGE GROUP CHART ENDS HERE
 
-  // Create mobile cases by age group chart
+  // CASES BY AGE GROUP MOBILE CHART STARTS HERE
   // Mobile chart axes
   let ageGroupMobileCategoryAxis = ageGroupMobileChart.xAxes.push(
     new am4charts.CategoryAxis()
@@ -382,9 +386,9 @@ const getData = async () => {
   scrape.casesByAge.forEach((item, index, arr) => {
     createAgeGroupSeries(arr[index].ageGroup, arr[index].ageGroup);
   });
+  // CASES BY AGE GROUP MOBILE CHART ENDS HERE
 
-  //////
-
+  // CASES BY REGION CHART STARTS HERE
   // Create regions chart series
   let regionsPieSeries = regionsChart.series.push(new am4charts.PieSeries());
   regionsPieSeries.dataFields.value = 'cases';
@@ -401,8 +405,9 @@ const getData = async () => {
   regionsChartTitle.marginTop = 30;
   regionsChartTitle.marginBottom = 10;
   regionsChartTitle.fontWeight = 'bold';
+  // CASES BY REGION CHART ENDS HERE
 
-  // Create mobile regions chart
+  // CASES BY REGION MOBILE CHART STARTS HERE
   // Mobile chart axes
   let mobileCategoryAxis = regionsMobileChart.xAxes.push(
     new am4charts.CategoryAxis()
@@ -426,6 +431,7 @@ const getData = async () => {
   mobileRegionsChartTitle.marginTop = 30;
   mobileRegionsChartTitle.marginBottom = 10;
   mobileRegionsChartTitle.fontWeight = 'bold';
+  // CASES BY REGION MOBILE CHART ENDS HERE
 
   // Function to create series for the mobile regions chart
   function createRegionsSeries(field, name) {
