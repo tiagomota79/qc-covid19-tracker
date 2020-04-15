@@ -6,9 +6,11 @@ const bodyParser = require('body-parser');
 
 // Import internal data and components
 const scrape = require('./src/scraper');
+const scrapeCanada = require('./src/scrapeCanada');
 const data = require('./src/data');
 // Destructuring data from internal component
-const { pageURL } = data; // This is the government's page URL for the scraper
+const { pageURL } = data; // This is the Quebec government's page URL for the scraper
+const { canadaURL } = data; // This is the Canada government's page URL for the scraper
 const { mongoURI } = data; // This is the MongoDB connection URI
 
 console.log(pageURL);
@@ -76,19 +78,28 @@ app.get('/lastdoc', (req, res) => {
     });
 });
 
-app.get('/alldata', (req, res) => {
+app.get('/alldata', async (req, res) => {
   // Get the documents collection
-  const collection = db.collection('total-cases-per-day');
+  const totalCasesPerDay = db.collection('total-cases-per-day');
+  const casesByRegion = db.collection('cases-by-region');
+  const casesByAgeGroup = db.collection('cases-by-age-group');
   // Find some documents
-  collection
+  const totalCases = await totalCasesPerDay
     .find({})
     .sort({ total: 1 })
-    .toArray(function (err, docs) {
-      assert.equal(err, null);
-      console.log('Found the following records');
-      console.log(docs);
-      res.send(JSON.stringify(docs));
-    });
+    .toArray();
+  const regionCases = await casesByRegion
+    .find({})
+    .sort({ _id: -1 })
+    .limit(1)
+    .toArray();
+  const ageGroupCases = await casesByAgeGroup
+    .find({})
+    .sort({ _id: -1 })
+    .limit(1)
+    .toArray();
+
+  res.json({ totalCases, regionCases, ageGroupCases });
 });
 
 app.get('/updatedb', async (req, res) => {

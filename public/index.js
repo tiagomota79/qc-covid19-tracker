@@ -92,8 +92,8 @@ function dateLong() {
 const getData = async () => {
   // Scrape data from government website and get last document on database
   const responses = await Promise.all([
-    await fetch('https://qc-covid19-tracker.herokuapp.com/scrape'),
-    await fetch('https://qc-covid19-tracker.herokuapp.com/lastdoc'),
+    await fetch('http://localhost:3000/scrape'),
+    await fetch('http://localhost:3000/lastdoc'),
   ]);
   const [scrape, lastdoc] = await Promise.all(
     responses.map(async (response) => await response.json())
@@ -127,15 +127,11 @@ const getData = async () => {
 
   // Compare scrape data with last document. If total cases number is the same, no action is performed on database. If they are different, the database is updated.
   if (scrape.total !== lastdoc[lastdoc.length - 1].total) {
-    const update = await fetch(
-      'https://qc-covid19-tracker.herokuapp.com/updatedb'
-    );
+    const update = await fetch('http://localhost:3000/updatedb');
     alldata = await update.json();
     domElements();
   } else {
-    const alldataFetch = await fetch(
-      'https://qc-covid19-tracker.herokuapp.com/alldata'
-    );
+    const alldataFetch = await fetch('http://localhost:3000/alldata');
     alldata = await alldataFetch.json();
     domElements();
   }
