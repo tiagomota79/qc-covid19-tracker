@@ -1,3 +1,7 @@
+// Get Heroku URL from dotenv
+require('dotenv').config();
+const dataURL = `${process.env.DATA_URL}` || `http://localhost:3000`;
+
 // Auxiliary function to create HTML elements
 function createHtmlElement(elementId, attribute, innerHTML) {
   const htmlElement = document.getElementById(elementId);
@@ -92,16 +96,16 @@ function dateLong() {
 const getData = async () => {
   // Scrape data from government website and get last document on database
   const responses = await Promise.all([
-    await fetch('http://localhost:3000/scrape'),
-    await fetch('http://localhost:3000/lastdoc'),
+    await fetch(`${dataURL}/scrape`),
+    await fetch(`${dataURL}/lasttotal`),
   ]);
-  const [scrape, lastdoc] = await Promise.all(
+  const [scrape, lasttotal] = await Promise.all(
     responses.map(async (response) => await response.json())
   );
   console.log('scrape', scrape);
-  console.log('lastdoc', lastdoc);
+  console.log('lasttotal', lasttotal);
   console.log('scrape total cases', scrape.total);
-  console.log('lastdoc total cases', lastdoc[lastdoc.length - 1].total);
+  console.log('lasttotal total cases', lasttotal[lasttotal.length - 1].total);
 
   // Function to create the divs where the charts will be placed
   function createChartDiv(attribute) {
@@ -126,12 +130,12 @@ const getData = async () => {
   }
 
   // Compare scrape data with last document. If total cases number is the same, no action is performed on database. If they are different, the database is updated.
-  if (scrape.total !== lastdoc[lastdoc.length - 1].total) {
-    const update = await fetch('http://localhost:3000/updatedb');
+  if (scrape.total !== lasttotal[lasttotal.length - 1].total) {
+    const update = await fetch(`${dataURL}/updatedb`);
     alldata = await update.json();
     domElements();
   } else {
-    const alldataFetch = await fetch('http://localhost:3000/alldata');
+    const alldataFetch = await fetch(`${dataURL}/alldata`);
     alldata = await alldataFetch.json();
     domElements();
   }

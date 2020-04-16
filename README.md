@@ -11,7 +11,7 @@ Stack:
 - amCharts
 - Vanilla JS
 
-With the new coronavirus spreading quickly throughout the world, people rely on data to understand the situation and get a sense of things to come. The Quebec government set up a [website](https://www.quebec.ca/sante/problemes-de-sante/a-z/coronavirus-2019/situation-coronavirus-quebec/) with updated information on cases, deaths and a breakdown of cases by province. Which is helpful! But the government website uses a simple table to convey all that information. Usually, graphs help people better understand data. Also, the government website doesn't contain a cumulative cases evolution, which would show people how the disease is spreading in our province. This app aims to solve both those issues.
+With the new coronavirus spreading quickly throughout the world, people rely on data to understand the situation and get a sense of things to come. The Quebec government set up a [website](https://www.quebec.ca/sante/problemes-de-sante/a-z/coronavirus-2019/situation-coronavirus-quebec/) with updated information on cases, tests, deaths and a breakdown of some of that information by region and age group. Which is helpful! But the government website uses simple tables to convey all that information. Usually, graphs help people better understand data. Also, the government website doesn't contain a cumulative cases evolution - which would show people how the disease is spreading in our province - or a historic of new cases confirmed per day - which would help track the testing. This app aims to bring all that information to life in an easy to digest format.
 
 ### Getting the evolution of COVID-19 cases
 

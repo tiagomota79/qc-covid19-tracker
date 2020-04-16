@@ -68,15 +68,17 @@ async function getData() {
   }
 
   // Update every collection in the DB
-  updateCollection('total-cases-per-day', total);
-  updateCollection('cases-by-region', regions);
-  updateCollection('deaths-by-age', casesByAge);
-  updateCollection('inc-cases', tests);
+  updateCollection('totalCasesPerDay', total);
+  updateCollection('casesByRegion', regions);
+  updateCollection('casesByAgeGroup', casesByAge);
+  updateCollection('tests', tests);
   updateCollection('hospitalization', hospitalizations);
-  updateCollection('total-deaths', deaths);
-  updateCollection('deaths-by-region', deathsByRegion);
-  updateCollection('deaths-by-age', deathsByAge);
-  updateCollection('canada-data', caData);
+  updateCollection('totalDeaths', deaths);
+  updateCollection('deathsByRegion', deathsByRegion);
+  updateCollection('deathsByAge', deathsByAge);
+  updateCollection('canadaData', caData);
 }
 
-getData();
+(async function () {
+  await getData();
+})();
