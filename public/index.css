@@ -1,3 +1,11 @@
+:root {
+  --title-blue: dodgerblue;
+  --background-blue: aliceblue;
+  --light-blue: #6ec2e1;
+  --dark-blue: #405caf;
+  --grey-blue: #8fb2de;
+}
+
 body {
   margin: 0;
   font-family: 'Montserrat', sans-serif;
@@ -21,13 +29,17 @@ body {
   font-size: 1.8rem;
   font-weight: bold;
   color: white;
-  background-color: dodgerblue;
+  background-color: var(--title-blue);
 }
 
 #headline,
 #mainchartdiv,
 #casesbyage,
 #regionchartdiv,
+#test-hosp,
+#deaths,
+#regiondeaths,
+#agegroupdeaths,
 #footer {
   padding: 0.5rem;
 }
@@ -39,7 +51,16 @@ body {
 .cases-headline {
   font-size: 1.5rem;
   font-weight: bold;
-  color: dodgerblue;
+  color: var(--title-blue);
+}
+
+.percentage {
+  font-size: smaller;
+}
+
+#percentage {
+  font-weight: bold;
+  color: var(--title-blue);
 }
 
 #mainchartdiv,
@@ -51,24 +72,90 @@ body {
   font-size: x-small;
 }
 
+#test-hosp {
+  height: 40rem;
+  background-color: var(--background-blue);
+}
+
+#tests,
+#hosp {
+  position: relative;
+  height: 50%;
+}
+
+#death-number {
+  font-weight: bold;
+  color: var(--title-blue);
+  font-size: larger;
+}
+
+#death-detail {
+  font-size: smaller;
+}
+
 #mainchartdiv,
 #casesbyagemobile,
-#footer {
-  background-color: aliceblue;
+#agegroupdeathsmobile {
+  background-color: var(--background-blue);
 }
 
 #regionchartdiv,
-#casesbyage {
+#casesbyage,
+#agegroupdeaths,
+#regiondeaths {
   display: none;
 }
 
 #regionchartmobilediv,
-#casesbyagemobile {
+#casesbyagemobile,
+#agegroupdeathsmobile,
+#regiondeathsmobile {
   height: 40rem;
+}
+
+#ca-data {
+  padding: 1rem 0;
+}
+
+#ca-data-header {
+  background: var(--title-blue);
+  color: white;
+  font-weight: bold;
+  padding: 0.5rem;
+  font-size: larger;
+}
+
+#ca-data-subheader {
+  font-size: smaller;
+  padding: 0.5rem 0 0 0;
+}
+
+#ca-data-boxes {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+.ca-numbers {
+  width: 25%;
+  background-color: var(--light-blue);
+  padding: 0.5rem;
+  height: 4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#bignumber {
+  font-size: larger;
+  font-weight: bold;
+  color: white;
 }
 
 #footer {
   font-size: xx-small;
+  background-color: var(--grey-blue);
 }
 
 .disclaimer {
@@ -77,9 +164,8 @@ body {
 
 .source,
 .sourcecode {
-  background-color: slategrey;
+  background-color: var(--dark-blue);
   padding: 0.2rem;
-  border-radius: 50rem;
   width: 7rem;
   margin: auto;
   color: white;
@@ -88,12 +174,6 @@ body {
 .source a {
   text-decoration: none;
   color: white;
-}
-
-.sourcecode {
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 #github {
@@ -116,15 +196,24 @@ body {
     font-size: 3rem;
     font-weight: bold;
     color: white;
-    background-color: dodgerblue;
+    background-color: var(--title-blue);
   }
 
   #headline,
   #mainchartdiv,
   #casesbyage,
   #regionchartdiv,
+  #test-hosp,
+  #regiondeaths,
+  #agegroupdeaths,
   #footer {
-    padding: 1.5rem;
+    padding: 1rem;
+  }
+
+  #deaths,
+  #ca-data {
+    padding: 1rem;
+    font-size: 1.5rem;
   }
 
   .headline {
@@ -134,41 +223,75 @@ body {
   .cases-headline {
     font-size: 3rem;
     font-weight: bold;
-    color: dodgerblue;
+    color: var(--title-blue);
+  }
+
+  .percentage {
+    font-size: x-large;
+  }
+
+  #percentage {
+    font-weight: bold;
+    color: var(--title-blue);
   }
 
   #mainchartdiv,
   #rateofchange,
   #casesbyage,
-  #regionchartdiv {
+  #regionchartdiv,
+  #agegroupdeaths,
+  #regiondeaths {
     position: relative;
     height: 30rem;
     font-size: small;
   }
 
+  #test-hosp {
+    display: flex;
+    justify-content: space-around;
+    height: 20rem;
+  }
+
+  #tests,
+  #hosp {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
   #mainchartdiv,
   #casesbyage,
+  #agegroupdeaths,
   #footer {
-    background-color: aliceblue;
+    background-color: var(--background-blue);
   }
 
   #casesbyage,
-  #regionchartdiv {
+  #regionchartdiv,
+  #agegroupdeaths,
+  #regiondeaths {
     display: block;
   }
 
   #casesbyagemobile,
-  #regionchartmobilediv {
+  #regionchartmobilediv,
+  #agegroupdeathsmobile,
+  #regiondeathsmobile {
     display: none;
+  }
+
+  #ca-data {
+    padding: 1rem 0;
   }
 
   #footer {
     font-size: smaller;
+    background-color: var(--grey-blue);
   }
 
   .source,
   .sourcecode {
-    width: 11rem;
+    width: 10rem;
   }
 
   .disclaimer {

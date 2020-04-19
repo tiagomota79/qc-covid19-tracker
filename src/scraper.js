@@ -11,7 +11,7 @@ async function scrape(url) {
     const cellContents = document.querySelector(
       '.contenttable tbody tr:last-of-type td:last-of-type'
     ).textContent;
-    return Number(cellContents.replace(/\s/g, ''));
+    return Number(cellContents.replace(/\s/g, '').match(/(\d+)/g)[0]);
   });
 
   // Get full cases table from government webpage
@@ -36,14 +36,6 @@ async function scrape(url) {
 
   casesTableObject.pop();
 
-  // Convert the table object into a single object with region names for keys and cases for values, to use in mobile version of chart
-  let casesTableMobile = [];
-  let casesTableMobileObject = {};
-  casesTableObject.forEach((item, index, arr) => {
-    casesTableMobileObject[arr[index].region] = arr[index].cases;
-  });
-  casesTableMobile.push(casesTableMobileObject);
-
   // Get cases by age group table
   const casesByAgeTable = await page.evaluate(() => {
     const rows = document.querySelectorAll(
@@ -63,14 +55,6 @@ async function scrape(url) {
       cases: Number(arr[index][1].replace(/,/g, '.').replace(/(\s%)/g, '')),
     });
   });
-
-  // Convert the cases by age group table object into a single object with region names for keys and cases for values, to use in mobile version of chart
-  let casesByAgeTableMobile = [];
-  let casesByAgeTableMobileObject = {};
-  casesByAgeTableObject.forEach((item, index, arr) => {
-    casesByAgeTableMobileObject[arr[index].ageGroup] = arr[index].cases;
-  });
-  casesByAgeTableMobile.push(casesByAgeTableMobileObject);
 
   // Scrape investigation/negative/confirmed list
   const incListObj = {};
@@ -97,6 +81,10 @@ async function scrape(url) {
     });
   });
 
+  incListArray[0].number = 'Under investigation';
+  incListArray[1].number = 'Negative';
+  incListArray[2].number = 'Positive';
+
   // Scrape hospitalization list
   const hospListObj = {};
   let hospList = await page.evaluate(() => {
@@ -122,6 +110,10 @@ async function scrape(url) {
     });
   });
 
+  hospListArray[0].number = 'Regular';
+  hospListArray[1].number = 'Intensive care';
+  hospListArray[2].number = 'Total';
+
   // Scrape deaths by region table
   const deathsByRegionTable = await page.evaluate(() => {
     const rows = document.querySelectorAll(
@@ -138,24 +130,16 @@ async function scrape(url) {
   deathsByRegionTable.forEach((item, index, arr) => {
     deathsByRegionTableObject.push({
       region: arr[index][0].replace(/(\d)*(\s)-\2/g, ''),
-      deaths: Number(arr[index][1].replace(/\s/g, '')),
+      deaths: Number(arr[index][1].replace(/\s/g, '').match(/(\d+)/g)[0]),
     });
   });
 
   let totalDeaths = deathsByRegionTableObject.pop().deaths; // Removes last value - total deaths - from deaths by region table and assign it to new variable
 
-  // Convert the table object into a single object with region names for keys and cases for values, to use in mobile version of chart
-  let deathsByRegionTableMobile = [];
-  let deathsByRegionTableMobileObject = {};
-  deathsByRegionTableObject.forEach((item, index, arr) => {
-    deathsByRegionTableMobileObject[arr[index].region] = arr[index].deaths;
-  });
-  deathsByRegionTableMobile.push(deathsByRegionTableMobileObject);
-
   // Get deaths by age group table
   const deathsByAgeTable = await page.evaluate(() => {
     const rows = document.querySelectorAll(
-      '#c50213 > div > div > div > table > tbody tr'
+      '#c51881 > div > div > div > table > tbody tr'
     );
     return Array.from(rows, (row) => {
       const columns = row.querySelectorAll('td');
@@ -171,14 +155,6 @@ async function scrape(url) {
       deaths: Number(arr[index][1].replace(/,/g, '.').replace(/(\s%)/g, '')),
     });
   });
-
-  // Convert the deaths by age group table object into a single object with region names for keys and deaths for values, to use in mobile version of chart
-  let deathsByAgeTableMobile = [];
-  let deathsByAgeTableMobileObject = {};
-  deathsByAgeTableObject.forEach((item, index, arr) => {
-    deathsByAgeTableMobileObject[arr[index].ageGroup] = arr[index].deaths;
-  });
-  deathsByAgeTableMobile.push(deathsByAgeTableMobileObject);
 
   // Gets today's date in YYYY-MM-DD format
   const date = `${new Date().getFullYear()}-${
