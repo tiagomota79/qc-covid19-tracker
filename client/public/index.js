@@ -1,8 +1,3 @@
-// Get Heroku URL from dotenv
-// import {} from 'dotenv/config';
-// dotenv.config();
-// const dataURL = `${process.env.DATA_URL}` || `http://localhost:3000`;
-
 // Auxiliary function to create HTML elements
 function createHtmlElement(elementId, attributeType, attributeName, innerHTML) {
   const htmlElement = document.getElementById(elementId);
@@ -287,7 +282,9 @@ function domElements() {
 // Get data from server and generate graphs
 const getData = async () => {
   // Fetch data from DB
-  const allDataFetch = await fetch(`http://localhost:3000/alldata`);
+  const allDataFetch = await fetch(
+    `https://qc-covid19-tracker.herokuapp.com/alldata`
+  );
   allData = await allDataFetch.json();
   console.log('allData', allData);
   domElements();
