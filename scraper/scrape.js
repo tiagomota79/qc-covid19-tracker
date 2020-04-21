@@ -1,7 +1,7 @@
 // Import internal data and components
-const scrape = require('./src/scraper');
-const scrapeCanada = require('./src/scrapeCanada');
-const data = require('./src/data');
+const scrape = require('./qcScraper');
+const scrapeCanada = require('./caScraper');
+const data = require('../src/data');
 // Destructuring data from internal component
 const { pageURL } = data; // This is the Quebec government's page URL for the scraper
 const { canadaURL } = data; // This is the Canada government's page URL for the scraper

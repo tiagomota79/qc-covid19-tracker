@@ -5,15 +5,10 @@ const app = express();
 const bodyParser = require('body-parser');
 
 // Import internal data and components
-const scrape = require('./src/scraper');
-const scrapeCanada = require('./src/scrapeCanada');
-const data = require('./src/data');
+const data = require('../src/data');
 // Destructuring data from internal component
-const { pageURL } = data; // This is the Quebec government's page URL for the scraper
-const { canadaURL } = data; // This is the Canada government's page URL for the scraper
 const { mongoURI } = data; // This is the MongoDB connection URI
 
-console.log(pageURL);
 console.log(mongoURI);
 
 // Connect to MongoDB
@@ -45,37 +40,11 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Allow Express to access the public folder
-app.use(express.static('public'));
+app.use(express.static('client/public'));
 
 // Routes
 app.get('/', (req, res) => {
   res.sendFile('index.html');
-});
-
-app.get('/scrape', async (req, res) => {
-  const data = await scrape(pageURL);
-  const casesToday = data.total;
-  const today = data.date;
-  console.log('data received from scraper', data);
-
-  res.send(JSON.stringify(data));
-});
-
-app.get('/lasttotal', (req, res) => {
-  // Get the documents collection
-  const collection = db.collection('total-cases-per-day');
-
-  // Get the last document from the collection
-  collection
-    .find({})
-    .sort({ _id: -1 })
-    .limit(1)
-    .toArray(function (err, doc) {
-      assert.equal(err, null);
-      console.log('Found this document');
-      console.log(doc);
-      res.send(JSON.stringify(doc));
-    });
 });
 
 app.get('/alldata', async (req, res) => {
