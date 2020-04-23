@@ -62,7 +62,7 @@ app.get('/alldata', async (req, res) => {
   // Find some documents
   const totalCases = await totalCasesPerDay
     .find({})
-    .sort({ total: 1 })
+    .sort({ data: 1 })
     .project({ _id: 0 })
     .toArray();
   const regionCases = await casesByRegion
