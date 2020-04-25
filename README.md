@@ -17,6 +17,8 @@ With the new coronavirus spreading quickly throughout the world, people rely on 
 
 When I set up to build this app, several days with confirmed cases in Quebec had already been registered. So, the first few days of data where retrieved with the help of the [Internet Archive's Wayback Machine](https://archive.org/web/). From the moment the scraper was set up and the server was connected to the MongoDB database, all data is retrieved daily from the government website and added to the database.
 
+The scraper was split into a separated app, which now also scrapes the Canadian website for some basic information. [You can see the scraper code here](https://github.com/tiagomota79/qc-covid19-scraper).
+
 ### Why Vanilla JS?
 
 The bulk of the work is done by the server, scraping data from the website, and by the amCharts module. The result is, for the end user, a static page, thus a simple HTML/JS/CSS structure suffices to have the information on the page.
