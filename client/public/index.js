@@ -276,7 +276,7 @@ function domElements() {
   createChartDiv('regiondeaths'); // Adds the div where the deaths by region chart will be placed
   createChartDiv('agegroupdeathsmobile'); // Adds the div where the mobile version of the deaths by age group chart will be placed
   createChartDiv('regiondeathsmobile'); // Adds the div where the mobile version of the deaths by region chart will be placed
-  // createChartDiv('ca-data'); // Adds the div where the Canada data will be placed
+  createChartDiv('ca-data'); // Adds the div where the Canada data will be placed
 }
 
 // Get data from server and generate graphs
@@ -403,15 +403,15 @@ const getData = async () => {
       diff
     )} from yesterday).`
   );
-  // createHtmlElement(
-  //   'headline',
-  //   'class',
-  //   'percentage',
-  //   `This represents <span id="percentage">${(
-  //     (totalQCCases / caData.total) *
-  //     100
-  //   ).toFixed(1)}%</span> of the confirmed cases in Canada.`
-  // );
+  createHtmlElement(
+    'headline',
+    'class',
+    'percentage',
+    `This represents <span id="percentage">${(
+      (totalQCCases / caData.total) *
+      100
+    ).toFixed(1)}%</span> of the confirmed cases in Canada.`
+  );
   createHtmlElement(
     'deaths',
     'class',
@@ -432,43 +432,43 @@ const getData = async () => {
   );
   createHtmlElement('test-hosp', 'id', 'tests', '');
   createHtmlElement('test-hosp', 'id', 'hosp', '');
-  // createHtmlElement(
-  //   'ca-data',
-  //   'id',
-  //   'ca-data-header',
-  //   'COVID-19 situation in Canada'
-  // );
-  // createHtmlElement(
-  //   'ca-data',
-  //   'id',
-  //   'ca-data-subheader',
-  //   'Resumed information'
-  // );
-  // createHtmlElement('ca-data', 'id', 'ca-data-boxes', '');
-  // createHtmlElement(
-  //   'ca-data-boxes',
-  //   'class',
-  //   'ca-numbers',
-  //   `<div id="bignumber">${new Intl.NumberFormat('en-CA').format(
-  //     caData.total
-  //   )}</div><div>confirmed cases</div>`
-  // );
-  // createHtmlElement(
-  //   'ca-data-boxes',
-  //   'class',
-  //   'ca-numbers',
-  //   `<div id="bignumber">${new Intl.NumberFormat('en-CA').format(
-  //     caData.tested
-  //   )}</div><div>people tested</div>`
-  // );
-  // createHtmlElement(
-  //   'ca-data-boxes',
-  //   'class',
-  //   'ca-numbers',
-  //   `<div id="bignumber">${new Intl.NumberFormat('en-CA').format(
-  //     caData.deaths
-  //   )}</div><div>deaths</div>`
-  // );
+  createHtmlElement(
+    'ca-data',
+    'id',
+    'ca-data-header',
+    'COVID-19 situation in Canada'
+  );
+  createHtmlElement(
+    'ca-data',
+    'id',
+    'ca-data-subheader',
+    'Resumed information'
+  );
+  createHtmlElement('ca-data', 'id', 'ca-data-boxes', '');
+  createHtmlElement(
+    'ca-data-boxes',
+    'class',
+    'ca-numbers',
+    `<div id="bignumber">${new Intl.NumberFormat('en-CA').format(
+      caData.total
+    )}</div><div>confirmed cases</div>`
+  );
+  createHtmlElement(
+    'ca-data-boxes',
+    'class',
+    'ca-numbers',
+    `<div id="bignumber">${new Intl.NumberFormat('en-CA').format(
+      caData.tested
+    )}</div><div>people tested</div>`
+  );
+  createHtmlElement(
+    'ca-data-boxes',
+    'class',
+    'ca-numbers',
+    `<div id="bignumber">${new Intl.NumberFormat('en-CA').format(
+      caData.deaths
+    )}</div><div>deaths</div>`
+  );
   createHtmlElement(
     'footer',
     'class',
