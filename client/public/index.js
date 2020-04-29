@@ -129,6 +129,14 @@ function valueAxis(chart) {
   return valueAxis;
 }
 
+// Function to create line charts value axis with logarithmic scale
+function valueAxisLog(chart) {
+  let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+  valueAxis.logarithmic = true;
+
+  return valueAxis;
+}
+
 // Function to create bar charts series
 function barChartSeries(chart, xValue, yValue, seriesName) {
   // Create main chart series
@@ -137,6 +145,20 @@ function barChartSeries(chart, xValue, yValue, seriesName) {
   series.dataFields.valueY = yValue;
   series.fillOpacity = 1;
   series.columns.template.tooltipText = '[bold]{dateX}[/]: {valueY}';
+  series.tooltip.pointerOrientation = 'vertical';
+  series.name = seriesName;
+
+  return series;
+}
+
+// Function to create bar charts series
+function lineChartSeries(chart, xValue, yValue, seriesName) {
+  // Create main chart series
+  let series = chart.series.push(new am4charts.LineSeries());
+  series.dataFields.dateX = xValue;
+  series.dataFields.valueY = yValue;
+  series.fillOpacity = 1;
+  series.tooltipText = '[bold]{dateX}[/]: {valueY}';
   series.tooltip.pointerOrientation = 'vertical';
   series.name = seriesName;
 
@@ -239,13 +261,9 @@ function donutChartSeries(chart, value, category) {
   donutSeries.dataFields.category = category;
   donutSeries.calculatePercent = true;
   donutSeries.labels.template.text = `[bold]{category}[/]:\n{value.percent}%`;
-  if (window.matchMedia('(min-width: 950px)').matches) {
-    donutSeries.labels.template.fontSize = 'smaller';
-  } else {
-    donutSeries.labels.template.fontSize = 'x-small';
-    donutSeries.ticks.template.disabled = true;
-    donutSeries.labels.template.disabled = true;
-  }
+  donutSeries.labels.template.fontSize = 'x-small';
+  donutSeries.ticks.template.disabled = true;
+  donutSeries.labels.template.disabled = true;
 
   // Change pie chart tooltip information
   donutSeries.slices.template.tooltipText = '[bold]{category}[/]: {value}';
@@ -265,6 +283,7 @@ function createChartDiv(attribute) {
 function domElements() {
   document.body.removeChild(spinner); // removes spinner after the data is loaded
   createChartDiv('mainchartdiv'); // Adds the div where the main chart will be placed
+  createChartDiv('logchartdiv'); // Adds the div where the main logarithmic chart will be placed
   createChartDiv('rateofchange'); // Adds the div where the rate of change chart will be placed
   createChartDiv('casesbyage'); // Adds the div where the cases by age group chart will be placed
   createChartDiv('casesbyagemobile'); // Adds the div where the mobile version of the cases by age group chart will be placed
@@ -496,6 +515,7 @@ const getData = async () => {
   // CREATE CHARTS
   // Create charts instances before anything, so they all use the themes below
   let mainChart = am4core.create('mainchartdiv', am4charts.XYChart); // This is the main chart, showing the cumulative cases by episode date
+  let logChart = am4core.create('logchartdiv', am4charts.XYChart); // This is the logarithmic chart, showing the cumulative cases by episode date in a logarithmic scale
   let rateOfChangeChart = am4core.create('rateofchange', am4charts.XYChart); // This is the rate of change chart, showing number of new cases per day
   let ageGroupChart = am4core.create('casesbyage', am4charts.PieChart); // This is the chart showing the cases by age group
   let ageGroupMobileChart = am4core.create(
@@ -535,6 +555,18 @@ const getData = async () => {
   valueAxis(mainChart); // Set ip main chart value axis
   barChartSeries(mainChart, 'date', 'data', 'Cases');
   // MAIN CHART ENDS HERE
+
+  // LOG CHART STARTS HERE
+  let [, ...logCases] = totalCases;
+  logChart.data = logCases; // Assign data
+  chartTitle(
+    logChart,
+    'Cumulative Cases by Episode Date\n[font-weight: normal font-size: smaller](Logarithmic scale)'
+  ); // Main chart title
+  dateAxis(logChart); // Set up main chart date axis
+  valueAxisLog(logChart); // Set ip main chart value axis
+  lineChartSeries(logChart, 'date', 'data', 'Cases');
+  // LOG CHART ENDS HERE
 
   // RATE OF CHANGE CHART STARTS HERE
   rateOfChangeChart.data = rateOfChange; // Assign data
@@ -602,14 +634,10 @@ const getData = async () => {
   // TESTS CHART STARTS HERE
   testsChart.data = tests;
   testsChart.numberFormatter.numberFormat = '#,###.#';
-  if (window.matchMedia('(min-width: 950px)').matches) {
-    testsChart.innerRadius = '60rem';
-  } else {
-    testsChart.innerRadius = '50rem';
-    testsChart.legend = new am4charts.Legend();
-    testsChart.legend.labels.template.fontSize = 'x-small';
-    testsChart.legend.labels.template.text = `[bold]{category}[/]:\n{value}`;
-  }
+  testsChart.innerRadius = '50rem';
+  testsChart.legend = new am4charts.Legend();
+  testsChart.legend.labels.template.fontSize = 'x-small';
+  testsChart.legend.labels.template.text = `[bold]{category}[/]:\n{value}`;
   donutChartLabel(
     testsChart,
     `[bold]${new Intl.NumberFormat('en-CA').format(
@@ -622,14 +650,10 @@ const getData = async () => {
   // HOSPITALIZATIONS CHART STARTS HERE
   hospChart.data = hospitalizations;
   hospChart.numberFormatter.numberFormat = '#,###.#';
-  if (window.matchMedia('(min-width: 950px)').matches) {
-    hospChart.innerRadius = '65rem';
-  } else {
-    hospChart.innerRadius = '60rem';
-    hospChart.legend = new am4charts.Legend();
-    hospChart.legend.labels.template.fontSize = 'x-small';
-    hospChart.legend.labels.template.text = `[bold]{category}[/]:\n{value}`;
-  }
+  hospChart.innerRadius = '60rem';
+  hospChart.legend = new am4charts.Legend();
+  hospChart.legend.labels.template.fontSize = 'x-small';
+  hospChart.legend.labels.template.text = `[bold]{category}[/]:\n{value}`;
   donutChartLabel(
     hospChart,
     `[bold]${new Intl.NumberFormat('en-CA').format(
