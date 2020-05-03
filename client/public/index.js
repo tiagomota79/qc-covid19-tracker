@@ -151,7 +151,7 @@ function barChartSeries(chart, xValue, yValue, seriesName) {
   return series;
 }
 
-// Function to create bar charts series
+// Function to create line charts series
 function lineChartSeries(chart, xValue, yValue, seriesName) {
   // Create main chart series
   let series = chart.series.push(new am4charts.LineSeries());
