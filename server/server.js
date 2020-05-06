@@ -3,6 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const bodyParser = require('body-parser');
+const moment = require('moment');
+moment().format();
 
 // Import internal data and components
 const data = require('../src/data');
@@ -62,54 +64,54 @@ app.get('/alldata', async (req, res) => {
   // Find some documents
   const totalCases = await totalCasesPerDay
     .find({})
-    .sort({ total: 1 })
+    .sort({ data: 1 })
     .project({ _id: 0 })
     .toArray();
   const regionCases = await casesByRegion
     .find({})
-    .sort({ _id: -1 })
+    .sort({ date: -1 })
     .project({ _id: 0 })
     .limit(1)
     .toArray();
   const ageGroupCases = await casesByAgeGroup
     .find({})
-    .sort({ _id: -1 })
+    .sort({ date: -1 })
     .project({ _id: 0 })
     .limit(1)
     .toArray();
   const deathsByAgeGroup = await deathsByAge
     .find({})
-    .sort({ _id: -1 })
+    .sort({ date: -1 })
     .project({ _id: 0 })
     .limit(1)
     .toArray();
   const regionDeaths = await deathsByRegion
     .find({})
-    .sort({ _id: -1 })
+    .sort({ date: -1 })
     .project({ _id: 0 })
     .limit(1)
     .toArray();
   const hospitalizations = await hospitalization
     .find({})
-    .sort({ _id: -1 })
+    .sort({ date: -1 })
     .project({ _id: 0 })
     .limit(1)
     .toArray();
   const tests = await testsData
     .find({})
-    .sort({ _id: -1 })
+    .sort({ date: -1 })
     .project({ _id: 0 })
     .limit(1)
     .toArray();
   const deaths = await totalDeaths
     .find({})
-    .sort({ _id: -1 })
+    .sort({ date: -1 })
     .project({ _id: 0 })
     .limit(1)
     .toArray();
   const caData = await canadaData
     .find({})
-    .sort({ _id: -1 })
+    .sort({ date: -1 })
     .project({ _id: 0 })
     .limit(1)
     .toArray();

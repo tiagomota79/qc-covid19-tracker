@@ -22,76 +22,76 @@ spinner.appendChild(spinnerImg);
 // Assign DOM body element to variable, to be used for DOM manipulation
 const body = document.body || document.querySelector('BODY')[0];
 
-// Function to get today's date in long format
-function dateLong() {
-  let year = String(new Date().getFullYear());
-  let day = String(new Date().getDate());
-  let month;
-  switch (new Date().getMonth()) {
-    case 0:
-      month = 'January';
-      break;
-    case 1:
-      month = 'February';
-      break;
-    case 2:
-      month = 'March';
-      break;
-    case 3:
-      month = 'April';
-      break;
-    case 4:
-      month = 'May';
-      break;
-    case 5:
-      month = 'June';
-      break;
-    case 6:
-      month = 'July';
-      break;
-    case 7:
-      month = 'August';
-      break;
-    case 8:
-      month = 'September';
-      break;
-    case 9:
-      month = 'October';
-      break;
-    case 10:
-      month = 'November';
-      break;
-    case 11:
-      month = 'December';
-      break;
-  }
-  let weekday;
-  switch (new Date().getDay()) {
-    case 0:
-      weekday = 'Sunday';
-      break;
-    case 1:
-      weekday = 'Monday';
-      break;
-    case 2:
-      weekday = 'Tuesday';
-      break;
-    case 3:
-      weekday = 'Wednesday';
-      break;
-    case 4:
-      weekday = 'Thursday';
-      break;
-    case 5:
-      weekday = 'Friday';
-      break;
-    case 6:
-      weekday = 'Saturday';
-  }
+// Function to get today's date in long format // This whole function was replaced by the use of momentjs
+// function dateLong() {
+//   let year = String(new Date().getFullYear());
+//   let day = String(new Date().getDate());
+//   let month;
+//   switch (new Date().getMonth()) {
+//     case 0:
+//       month = 'January';
+//       break;
+//     case 1:
+//       month = 'February';
+//       break;
+//     case 2:
+//       month = 'March';
+//       break;
+//     case 3:
+//       month = 'April';
+//       break;
+//     case 4:
+//       month = 'May';
+//       break;
+//     case 5:
+//       month = 'June';
+//       break;
+//     case 6:
+//       month = 'July';
+//       break;
+//     case 7:
+//       month = 'August';
+//       break;
+//     case 8:
+//       month = 'September';
+//       break;
+//     case 9:
+//       month = 'October';
+//       break;
+//     case 10:
+//       month = 'November';
+//       break;
+//     case 11:
+//       month = 'December';
+//       break;
+//   }
+//   let weekday;
+//   switch (new Date().getDay()) {
+//     case 0:
+//       weekday = 'Sunday';
+//       break;
+//     case 1:
+//       weekday = 'Monday';
+//       break;
+//     case 2:
+//       weekday = 'Tuesday';
+//       break;
+//     case 3:
+//       weekday = 'Wednesday';
+//       break;
+//     case 4:
+//       weekday = 'Thursday';
+//       break;
+//     case 5:
+//       weekday = 'Friday';
+//       break;
+//     case 6:
+//       weekday = 'Saturday';
+//   }
 
-  let dateToShow = `${weekday}, ${month} ${day}, ${year}`;
-  return dateToShow;
-}
+//   let dateToShow = `${weekday}, ${month} ${day}, ${year}`;
+//   return dateToShow;
+// }
 
 // Function to create charts titles
 function chartTitle(chart, title) {
@@ -327,6 +327,17 @@ const getData = async () => {
   const caData = allData.caData[0].data;
 
   // DATA MANIPULATIONS
+  // Delete last totalCases entry if it's identical to the previous one, and set dates to show
+  if (
+    totalCases[totalCases.length - 1].data ===
+    totalCases[totalCases.length - 2].data
+  ) {
+    totalCases.pop();
+  }
+  const dateLastEntry = moment(totalCases[totalCases.length - 1].date).format(
+    'dddd, MMMM Do YYYY'
+  );
+
   // Total Quebec cases today
   let totalQCCases = totalCases[totalCases.length - 1].data;
 
@@ -351,7 +362,7 @@ const getData = async () => {
     regionCasesMobileObject[arr[index].region] = arr[index].cases;
   });
   regionCasesMobile.push(regionCasesMobileObject);
-  regionCasesMobile[0].date = dateLong();
+  regionCasesMobile[0].date = moment().format('dddd, MMMM Do YYYY');
   console.log('regionCasesMobile', regionCasesMobile);
 
   // Cases by age group
@@ -361,7 +372,7 @@ const getData = async () => {
     ageGroupCasesMobileObject[arr[index].ageGroup] = arr[index].cases;
   });
   ageGroupCasesMobile.push(ageGroupCasesMobileObject);
-  ageGroupCasesMobile[0].date = dateLong();
+  ageGroupCasesMobile[0].date = moment().format('dddd, MMMM Do YYYY');
 
   // Deaths by region
   let regionDeathsMobile = [];
@@ -370,7 +381,7 @@ const getData = async () => {
     regionDeathsMobileObject[arr[index].region] = arr[index].deaths;
   });
   regionDeathsMobile.push(regionDeathsMobileObject);
-  regionDeathsMobile[0].date = dateLong();
+  regionDeathsMobile[0].date = moment().format('dddd, MMMM Do YYYY');
 
   // Deaths by age group
   let ageGroupDeathsMobile = [];
@@ -379,7 +390,7 @@ const getData = async () => {
     ageGroupDeathsMobileObject[arr[index].ageGroup] = arr[index].deaths;
   });
   ageGroupDeathsMobile.push(ageGroupDeathsMobileObject);
-  ageGroupDeathsMobile[0].date = dateLong();
+  ageGroupDeathsMobile[0].date = moment().format('dddd, MMMM Do YYYY');
 
   // Hospitalizations
   let totalHosp = hospitalizations.pop().value;
@@ -389,7 +400,7 @@ const getData = async () => {
     hospitalizationsMobileObject[arr[index].number] = arr[index].value;
   });
   hospitalizationsMobile.push(hospitalizationsMobileObject);
-  hospitalizationsMobile[0].date = dateLong();
+  hospitalizationsMobile[0].date = moment().format('dddd, MMMM Do YYYY');
 
   // Tests
   let testsMobile = [];
@@ -398,7 +409,7 @@ const getData = async () => {
     testsMobileObject[arr[index].number] = arr[index].value;
   });
   testsMobile.push(testsMobileObject);
-  testsMobile[0].date = dateLong();
+  testsMobile[0].date = moment().format('dddd, MMMM Do YYYY');
 
   // Create title
   const title = document.createElement('H1');
@@ -407,26 +418,47 @@ const getData = async () => {
   body.prepend(title);
 
   // Create headline, source, disclaimer, sourcecode and copyright
-  createHtmlElement(
-    '#headline',
-    'class',
-    'headline',
-    `As of <b>${dateLong()}</b>, Quebec has`
-  );
+  if (moment().format('dddd, MMMM Do YYYY') === dateLastEntry) {
+    createHtmlElement(
+      '#headline',
+      'class',
+      'headline',
+      `As of <b>${moment().format('dddd, MMMM Do YYYY')}</b>, Quebec has`
+    );
+  } else {
+    createHtmlElement(
+      '#headline',
+      'class',
+      'headline',
+      `As of <b>${dateLastEntry}</b>, Quebec has`
+    );
+  }
+
   createHtmlElement(
     '#headline',
     'class',
     'cases-headline',
     new Intl.NumberFormat('en-CA').format(totalQCCases)
   );
-  createHtmlElement(
-    '#headline',
-    'class',
-    'headline',
-    `confirmed COVID-19 cases (up ${new Intl.NumberFormat('en-CA').format(
-      diff
-    )} from yesterday).`
-  );
+  if (moment().format('dddd, MMMM Do YYYY') === dateLastEntry) {
+    createHtmlElement(
+      '#headline',
+      'class',
+      'headline',
+      `confirmed COVID-19 cases (up ${new Intl.NumberFormat('en-CA').format(
+        diff
+      )} from yesterday).`
+    );
+  } else {
+    createHtmlElement(
+      '#headline',
+      'class',
+      'headline',
+      `confirmed COVID-19 cases (up ${new Intl.NumberFormat('en-CA').format(
+        diff
+      )} from the previous day).`
+    );
+  }
   createHtmlElement(
     '#headline',
     'class',
