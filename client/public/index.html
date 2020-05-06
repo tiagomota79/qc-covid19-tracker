@@ -1,6 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=UA-165574717-1"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+
+      gtag('config', 'UA-165574717-1');
+    </script>
+
     <link rel="stylesheet" type="text/css" href="index.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;800&display=swap"
@@ -23,6 +38,10 @@
     <script src="https://www.amcharts.com/lib/4/charts.js"></script>
     <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
     <script src="https://www.amcharts.com/lib/4/themes/material.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.25.3/moment.min.js"></script>
+    <script>
+      moment().format();
+    </script>
     <script src="index.js"></script>
   </body>
 </html>

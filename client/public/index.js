@@ -1,6 +1,11 @@
 // Auxiliary function to create HTML elements
-function createHtmlElement(elementId, attributeType, attributeName, innerHTML) {
-  const htmlElement = document.getElementById(elementId);
+function createHtmlElement(
+  querySelector,
+  attributeType,
+  attributeName,
+  innerHTML
+) {
+  const htmlElement = document.querySelector(querySelector);
   const element = document.createElement('div');
   element.setAttribute(attributeType, attributeName);
   element.innerHTML = innerHTML;
@@ -8,85 +13,85 @@ function createHtmlElement(elementId, attributeType, attributeName, innerHTML) {
 }
 
 // Create loading spinner
-const spinner = document.getElementById('spinner');
+const spinner = document.querySelector('#spinner');
 const spinnerImg = document.createElement('IMG');
 spinnerImg.setAttribute('src', 'images/Bars-1s-200px.gif');
 spinnerImg.setAttribute('class', 'spinner');
 spinner.appendChild(spinnerImg);
 
 // Assign DOM body element to variable, to be used for DOM manipulation
-const body = document.body || document.getElementsByTagName('BODY')[0];
+const body = document.body || document.querySelector('BODY')[0];
 
-// Function to get today's date in long format
-function dateLong() {
-  let year = String(new Date().getFullYear());
-  let day = String(new Date().getDate());
-  let month;
-  switch (new Date().getMonth()) {
-    case 0:
-      month = 'January';
-      break;
-    case 1:
-      month = 'February';
-      break;
-    case 2:
-      month = 'March';
-      break;
-    case 3:
-      month = 'April';
-      break;
-    case 4:
-      month = 'May';
-      break;
-    case 5:
-      month = 'June';
-      break;
-    case 6:
-      month = 'July';
-      break;
-    case 7:
-      month = 'August';
-      break;
-    case 8:
-      month = 'September';
-      break;
-    case 9:
-      month = 'October';
-      break;
-    case 10:
-      month = 'November';
-      break;
-    case 11:
-      month = 'December';
-      break;
-  }
-  let weekday;
-  switch (new Date().getDay()) {
-    case 0:
-      weekday = 'Sunday';
-      break;
-    case 1:
-      weekday = 'Monday';
-      break;
-    case 2:
-      weekday = 'Tuesday';
-      break;
-    case 3:
-      weekday = 'Wednesday';
-      break;
-    case 4:
-      weekday = 'Thursday';
-      break;
-    case 5:
-      weekday = 'Friday';
-      break;
-    case 6:
-      weekday = 'Saturday';
-  }
+// Function to get today's date in long format // This whole function was replaced by the use of momentjs
+// function dateLong() {
+//   let year = String(new Date().getFullYear());
+//   let day = String(new Date().getDate());
+//   let month;
+//   switch (new Date().getMonth()) {
+//     case 0:
+//       month = 'January';
+//       break;
+//     case 1:
+//       month = 'February';
+//       break;
+//     case 2:
+//       month = 'March';
+//       break;
+//     case 3:
+//       month = 'April';
+//       break;
+//     case 4:
+//       month = 'May';
+//       break;
+//     case 5:
+//       month = 'June';
+//       break;
+//     case 6:
+//       month = 'July';
+//       break;
+//     case 7:
+//       month = 'August';
+//       break;
+//     case 8:
+//       month = 'September';
+//       break;
+//     case 9:
+//       month = 'October';
+//       break;
+//     case 10:
+//       month = 'November';
+//       break;
+//     case 11:
+//       month = 'December';
+//       break;
+//   }
+//   let weekday;
+//   switch (new Date().getDay()) {
+//     case 0:
+//       weekday = 'Sunday';
+//       break;
+//     case 1:
+//       weekday = 'Monday';
+//       break;
+//     case 2:
+//       weekday = 'Tuesday';
+//       break;
+//     case 3:
+//       weekday = 'Wednesday';
+//       break;
+//     case 4:
+//       weekday = 'Thursday';
+//       break;
+//     case 5:
+//       weekday = 'Friday';
+//       break;
+//     case 6:
+//       weekday = 'Saturday';
+//   }
 
-  let dateToShow = `${weekday}, ${month} ${day}, ${year}`;
-  return dateToShow;
-}
+//   let dateToShow = `${weekday}, ${month} ${day}, ${year}`;
+//   return dateToShow;
+// }
 
 // Function to create charts titles
 function chartTitle(chart, title) {
@@ -129,6 +134,14 @@ function valueAxis(chart) {
   return valueAxis;
 }
 
+// Function to create line charts value axis with logarithmic scale
+function valueAxisLog(chart) {
+  let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+  valueAxis.logarithmic = true;
+
+  return valueAxis;
+}
+
 // Function to create bar charts series
 function barChartSeries(chart, xValue, yValue, seriesName) {
   // Create main chart series
@@ -137,6 +150,20 @@ function barChartSeries(chart, xValue, yValue, seriesName) {
   series.dataFields.valueY = yValue;
   series.fillOpacity = 1;
   series.columns.template.tooltipText = '[bold]{dateX}[/]: {valueY}';
+  series.tooltip.pointerOrientation = 'vertical';
+  series.name = seriesName;
+
+  return series;
+}
+
+// Function to create line charts series
+function lineChartSeries(chart, xValue, yValue, seriesName) {
+  // Create main chart series
+  let series = chart.series.push(new am4charts.LineSeries());
+  series.dataFields.dateX = xValue;
+  series.dataFields.valueY = yValue;
+  series.fillOpacity = 1;
+  series.tooltipText = '[bold]{dateX}[/]: {valueY}';
   series.tooltip.pointerOrientation = 'vertical';
   series.name = seriesName;
 
@@ -239,13 +266,9 @@ function donutChartSeries(chart, value, category) {
   donutSeries.dataFields.category = category;
   donutSeries.calculatePercent = true;
   donutSeries.labels.template.text = `[bold]{category}[/]:\n{value.percent}%`;
-  if (window.matchMedia('(min-width: 950px)').matches) {
-    donutSeries.labels.template.fontSize = 'smaller';
-  } else {
-    donutSeries.labels.template.fontSize = 'x-small';
-    donutSeries.ticks.template.disabled = true;
-    donutSeries.labels.template.disabled = true;
-  }
+  donutSeries.labels.template.fontSize = 'x-small';
+  donutSeries.ticks.template.disabled = true;
+  donutSeries.labels.template.disabled = true;
 
   // Change pie chart tooltip information
   donutSeries.slices.template.tooltipText = '[bold]{category}[/]: {value}';
@@ -255,7 +278,7 @@ function donutChartSeries(chart, value, category) {
 
 // Function to create the divs where the charts will be placed
 function createChartDiv(attribute) {
-  const footer = document.getElementById('footer');
+  const footer = document.querySelector('#footer');
   const chartDiv = document.createElement('div');
   chartDiv.setAttribute('id', attribute);
   body.insertBefore(chartDiv, footer);
@@ -265,6 +288,7 @@ function createChartDiv(attribute) {
 function domElements() {
   document.body.removeChild(spinner); // removes spinner after the data is loaded
   createChartDiv('mainchartdiv'); // Adds the div where the main chart will be placed
+  createChartDiv('logchartdiv'); // Adds the div where the main logarithmic chart will be placed
   createChartDiv('rateofchange'); // Adds the div where the rate of change chart will be placed
   createChartDiv('casesbyage'); // Adds the div where the cases by age group chart will be placed
   createChartDiv('casesbyagemobile'); // Adds the div where the mobile version of the cases by age group chart will be placed
@@ -303,6 +327,17 @@ const getData = async () => {
   const caData = allData.caData[0].data;
 
   // DATA MANIPULATIONS
+  // Delete last totalCases entry if it's identical to the previous one, and set dates to show
+  if (
+    totalCases[totalCases.length - 1].data ===
+    totalCases[totalCases.length - 2].data
+  ) {
+    totalCases.pop();
+  }
+  const dateLastEntry = moment(totalCases[totalCases.length - 1].date).format(
+    'dddd, MMMM Do YYYY'
+  );
+
   // Total Quebec cases today
   let totalQCCases = totalCases[totalCases.length - 1].data;
 
@@ -327,7 +362,7 @@ const getData = async () => {
     regionCasesMobileObject[arr[index].region] = arr[index].cases;
   });
   regionCasesMobile.push(regionCasesMobileObject);
-  regionCasesMobile[0].date = dateLong();
+  regionCasesMobile[0].date = moment().format('dddd, MMMM Do YYYY');
   console.log('regionCasesMobile', regionCasesMobile);
 
   // Cases by age group
@@ -337,7 +372,7 @@ const getData = async () => {
     ageGroupCasesMobileObject[arr[index].ageGroup] = arr[index].cases;
   });
   ageGroupCasesMobile.push(ageGroupCasesMobileObject);
-  ageGroupCasesMobile[0].date = dateLong();
+  ageGroupCasesMobile[0].date = moment().format('dddd, MMMM Do YYYY');
 
   // Deaths by region
   let regionDeathsMobile = [];
@@ -346,7 +381,7 @@ const getData = async () => {
     regionDeathsMobileObject[arr[index].region] = arr[index].deaths;
   });
   regionDeathsMobile.push(regionDeathsMobileObject);
-  regionDeathsMobile[0].date = dateLong();
+  regionDeathsMobile[0].date = moment().format('dddd, MMMM Do YYYY');
 
   // Deaths by age group
   let ageGroupDeathsMobile = [];
@@ -355,7 +390,7 @@ const getData = async () => {
     ageGroupDeathsMobileObject[arr[index].ageGroup] = arr[index].deaths;
   });
   ageGroupDeathsMobile.push(ageGroupDeathsMobileObject);
-  ageGroupDeathsMobile[0].date = dateLong();
+  ageGroupDeathsMobile[0].date = moment().format('dddd, MMMM Do YYYY');
 
   // Hospitalizations
   let totalHosp = hospitalizations.pop().value;
@@ -365,7 +400,7 @@ const getData = async () => {
     hospitalizationsMobileObject[arr[index].number] = arr[index].value;
   });
   hospitalizationsMobile.push(hospitalizationsMobileObject);
-  hospitalizationsMobile[0].date = dateLong();
+  hospitalizationsMobile[0].date = moment().format('dddd, MMMM Do YYYY');
 
   // Tests
   let testsMobile = [];
@@ -374,7 +409,7 @@ const getData = async () => {
     testsMobileObject[arr[index].number] = arr[index].value;
   });
   testsMobile.push(testsMobileObject);
-  testsMobile[0].date = dateLong();
+  testsMobile[0].date = moment().format('dddd, MMMM Do YYYY');
 
   // Create title
   const title = document.createElement('H1');
@@ -383,28 +418,49 @@ const getData = async () => {
   body.prepend(title);
 
   // Create headline, source, disclaimer, sourcecode and copyright
+  if (moment().format('dddd, MMMM Do YYYY') === dateLastEntry) {
+    createHtmlElement(
+      '#headline',
+      'class',
+      'headline',
+      `As of <b>${moment().format('dddd, MMMM Do YYYY')}</b>, Quebec has`
+    );
+  } else {
+    createHtmlElement(
+      '#headline',
+      'class',
+      'headline',
+      `As of <b>${dateLastEntry}</b>, Quebec has`
+    );
+  }
+
   createHtmlElement(
-    'headline',
-    'class',
-    'headline',
-    `As of <b>${dateLong()}</b>, Quebec has`
-  );
-  createHtmlElement(
-    'headline',
+    '#headline',
     'class',
     'cases-headline',
     new Intl.NumberFormat('en-CA').format(totalQCCases)
   );
+  if (moment().format('dddd, MMMM Do YYYY') === dateLastEntry) {
+    createHtmlElement(
+      '#headline',
+      'class',
+      'headline',
+      `confirmed COVID-19 cases (up ${new Intl.NumberFormat('en-CA').format(
+        diff
+      )} from yesterday).`
+    );
+  } else {
+    createHtmlElement(
+      '#headline',
+      'class',
+      'headline',
+      `confirmed COVID-19 cases (up ${new Intl.NumberFormat('en-CA').format(
+        diff
+      )} from the previous day).`
+    );
+  }
   createHtmlElement(
-    'headline',
-    'class',
-    'headline',
-    `confirmed COVID-19 cases (up ${new Intl.NumberFormat('en-CA').format(
-      diff
-    )} from yesterday).`
-  );
-  createHtmlElement(
-    'headline',
+    '#headline',
     'class',
     'percentage',
     `This represents <span id="percentage">${(
@@ -413,7 +469,7 @@ const getData = async () => {
     ).toFixed(1)}%</span> of the confirmed cases in Canada.`
   );
   createHtmlElement(
-    'deaths',
+    '#deaths',
     'class',
     'deaths',
     `<div id="death-number">${new Intl.NumberFormat('en-CA').format(
@@ -430,23 +486,23 @@ const getData = async () => {
       ).toFixed(0)
     )} of which from people 70 years or more).</div>`
   );
-  createHtmlElement('test-hosp', 'id', 'tests', '');
-  createHtmlElement('test-hosp', 'id', 'hosp', '');
+  createHtmlElement('#test-hosp', 'id', 'tests', '');
+  createHtmlElement('#test-hosp', 'id', 'hosp', '');
   createHtmlElement(
-    'ca-data',
+    '#ca-data',
     'id',
     'ca-data-header',
     'COVID-19 situation in Canada'
   );
   createHtmlElement(
-    'ca-data',
+    '#ca-data',
     'id',
     'ca-data-subheader',
     'Resumed information'
   );
-  createHtmlElement('ca-data', 'id', 'ca-data-boxes', '');
+  createHtmlElement('#ca-data', 'id', 'ca-data-boxes', '');
   createHtmlElement(
-    'ca-data-boxes',
+    '#ca-data-boxes',
     'class',
     'ca-numbers',
     `<div id="bignumber">${new Intl.NumberFormat('en-CA').format(
@@ -454,7 +510,7 @@ const getData = async () => {
     )}</div><div>confirmed cases</div>`
   );
   createHtmlElement(
-    'ca-data-boxes',
+    '#ca-data-boxes',
     'class',
     'ca-numbers',
     `<div id="bignumber">${new Intl.NumberFormat('en-CA').format(
@@ -462,7 +518,7 @@ const getData = async () => {
     )}</div><div>people tested</div>`
   );
   createHtmlElement(
-    'ca-data-boxes',
+    '#ca-data-boxes',
     'class',
     'ca-numbers',
     `<div id="bignumber">${new Intl.NumberFormat('en-CA').format(
@@ -470,7 +526,7 @@ const getData = async () => {
     )}</div><div>deaths</div>`
   );
   createHtmlElement(
-    'footer',
+    '#footer',
     'class',
     'source',
     `<b>Sources:</b><br />
@@ -480,22 +536,23 @@ const getData = async () => {
   ><br /><a href="https://www.canada.ca/en/public-health/services/diseases/coronavirus-disease-covid-19.html">Canada.ca</a>`
   );
   createHtmlElement(
-    'footer',
+    '#footer',
     'class',
     'disclaimer',
     'This is a personal project, it is not meant to alarm anyone or cause panic. All the data is real, collected daily from the Quebec government website. For more information on the COVID-19 spread, consult the sources above.'
   );
   createHtmlElement(
-    'footer',
+    '#footer',
     'class',
     'sourcecode',
     `<a id="github_link" href="https://github.com/tiagomota79/qc-covid19-tracker"><svg height="32" id="github" viewBox="0 0 16 16" version="1.1" width="32" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg><br />GitHub Repository</a>`
   );
-  createHtmlElement('footer', 'class', 'copyright', '© 2020 Tiago Mota');
+  createHtmlElement('#footer', 'class', 'copyright', '© 2020 Tiago Mota');
 
   // CREATE CHARTS
   // Create charts instances before anything, so they all use the themes below
   let mainChart = am4core.create('mainchartdiv', am4charts.XYChart); // This is the main chart, showing the cumulative cases by episode date
+  let logChart = am4core.create('logchartdiv', am4charts.XYChart); // This is the logarithmic chart, showing the cumulative cases by episode date in a logarithmic scale
   let rateOfChangeChart = am4core.create('rateofchange', am4charts.XYChart); // This is the rate of change chart, showing number of new cases per day
   let ageGroupChart = am4core.create('casesbyage', am4charts.PieChart); // This is the chart showing the cases by age group
   let ageGroupMobileChart = am4core.create(
@@ -535,6 +592,18 @@ const getData = async () => {
   valueAxis(mainChart); // Set ip main chart value axis
   barChartSeries(mainChart, 'date', 'data', 'Cases');
   // MAIN CHART ENDS HERE
+
+  // LOG CHART STARTS HERE
+  let [, ...logCases] = totalCases;
+  logChart.data = logCases; // Assign data
+  chartTitle(
+    logChart,
+    'Cumulative Cases by Episode Date\n[font-weight: normal font-size: smaller](Logarithmic scale)'
+  ); // Main chart title
+  dateAxis(logChart); // Set up main chart date axis
+  valueAxisLog(logChart); // Set ip main chart value axis
+  lineChartSeries(logChart, 'date', 'data', 'Cases');
+  // LOG CHART ENDS HERE
 
   // RATE OF CHANGE CHART STARTS HERE
   rateOfChangeChart.data = rateOfChange; // Assign data
@@ -602,14 +671,10 @@ const getData = async () => {
   // TESTS CHART STARTS HERE
   testsChart.data = tests;
   testsChart.numberFormatter.numberFormat = '#,###.#';
-  if (window.matchMedia('(min-width: 950px)').matches) {
-    testsChart.innerRadius = '60rem';
-  } else {
-    testsChart.innerRadius = '50rem';
-    testsChart.legend = new am4charts.Legend();
-    testsChart.legend.labels.template.fontSize = 'x-small';
-    testsChart.legend.labels.template.text = `[bold]{category}[/]:\n{value}`;
-  }
+  testsChart.innerRadius = '50rem';
+  testsChart.legend = new am4charts.Legend();
+  testsChart.legend.labels.template.fontSize = 'x-small';
+  testsChart.legend.labels.template.text = `[bold]{category}[/]:\n{value}`;
   donutChartLabel(
     testsChart,
     `[bold]${new Intl.NumberFormat('en-CA').format(
@@ -622,14 +687,10 @@ const getData = async () => {
   // HOSPITALIZATIONS CHART STARTS HERE
   hospChart.data = hospitalizations;
   hospChart.numberFormatter.numberFormat = '#,###.#';
-  if (window.matchMedia('(min-width: 950px)').matches) {
-    hospChart.innerRadius = '65rem';
-  } else {
-    hospChart.innerRadius = '60rem';
-    hospChart.legend = new am4charts.Legend();
-    hospChart.legend.labels.template.fontSize = 'x-small';
-    hospChart.legend.labels.template.text = `[bold]{category}[/]:\n{value}`;
-  }
+  hospChart.innerRadius = '60rem';
+  hospChart.legend = new am4charts.Legend();
+  hospChart.legend.labels.template.fontSize = 'x-small';
+  hospChart.legend.labels.template.text = `[bold]{category}[/]:\n{value}`;
   donutChartLabel(
     hospChart,
     `[bold]${new Intl.NumberFormat('en-CA').format(
