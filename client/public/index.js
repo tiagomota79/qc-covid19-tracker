@@ -22,77 +22,6 @@ spinner.appendChild(spinnerImg);
 // Assign DOM body element to variable, to be used for DOM manipulation
 const body = document.body || document.querySelector('BODY')[0];
 
-// Function to get today's date in long format // This whole function was replaced by the use of momentjs
-// function dateLong() {
-//   let year = String(new Date().getFullYear());
-//   let day = String(new Date().getDate());
-//   let month;
-//   switch (new Date().getMonth()) {
-//     case 0:
-//       month = 'January';
-//       break;
-//     case 1:
-//       month = 'February';
-//       break;
-//     case 2:
-//       month = 'March';
-//       break;
-//     case 3:
-//       month = 'April';
-//       break;
-//     case 4:
-//       month = 'May';
-//       break;
-//     case 5:
-//       month = 'June';
-//       break;
-//     case 6:
-//       month = 'July';
-//       break;
-//     case 7:
-//       month = 'August';
-//       break;
-//     case 8:
-//       month = 'September';
-//       break;
-//     case 9:
-//       month = 'October';
-//       break;
-//     case 10:
-//       month = 'November';
-//       break;
-//     case 11:
-//       month = 'December';
-//       break;
-//   }
-//   let weekday;
-//   switch (new Date().getDay()) {
-//     case 0:
-//       weekday = 'Sunday';
-//       break;
-//     case 1:
-//       weekday = 'Monday';
-//       break;
-//     case 2:
-//       weekday = 'Tuesday';
-//       break;
-//     case 3:
-//       weekday = 'Wednesday';
-//       break;
-//     case 4:
-//       weekday = 'Thursday';
-//       break;
-//     case 5:
-//       weekday = 'Friday';
-//       break;
-//     case 6:
-//       weekday = 'Saturday';
-//   }
-
-//   let dateToShow = `${weekday}, ${month} ${day}, ${year}`;
-//   return dateToShow;
-// }
-
 // Function to create charts titles
 function chartTitle(chart, title) {
   let chartTitle = chart.titles.create();
@@ -362,7 +291,7 @@ const getData = async () => {
     regionCasesMobileObject[arr[index].region] = arr[index].cases;
   });
   regionCasesMobile.push(regionCasesMobileObject);
-  regionCasesMobile[0].date = moment().format('dddd, MMMM Do YYYY');
+  regionCasesMobile[0].date = '';
   console.log('regionCasesMobile', regionCasesMobile);
 
   // Cases by age group
@@ -372,7 +301,7 @@ const getData = async () => {
     ageGroupCasesMobileObject[arr[index].ageGroup] = arr[index].cases;
   });
   ageGroupCasesMobile.push(ageGroupCasesMobileObject);
-  ageGroupCasesMobile[0].date = moment().format('dddd, MMMM Do YYYY');
+  ageGroupCasesMobile[0].date = '';
 
   // Deaths by region
   let regionDeathsMobile = [];
@@ -381,7 +310,7 @@ const getData = async () => {
     regionDeathsMobileObject[arr[index].region] = arr[index].deaths;
   });
   regionDeathsMobile.push(regionDeathsMobileObject);
-  regionDeathsMobile[0].date = moment().format('dddd, MMMM Do YYYY');
+  regionDeathsMobile[0].date = '';
 
   // Deaths by age group
   let ageGroupDeathsMobile = [];
@@ -390,7 +319,7 @@ const getData = async () => {
     ageGroupDeathsMobileObject[arr[index].ageGroup] = arr[index].deaths;
   });
   ageGroupDeathsMobile.push(ageGroupDeathsMobileObject);
-  ageGroupDeathsMobile[0].date = moment().format('dddd, MMMM Do YYYY');
+  ageGroupDeathsMobile[0].date = '';
 
   // Hospitalizations
   let totalHosp = hospitalizations.pop().value;
@@ -410,6 +339,12 @@ const getData = async () => {
   });
   testsMobile.push(testsMobileObject);
   testsMobile[0].date = moment().format('dddd, MMMM Do YYYY');
+  let totalTests = 0;
+  tests.forEach((item, index, arr) => {
+    if (arr[index].number === 'Negative' || arr[index].number === 'Positive') {
+      totalTests += arr[index].value;
+    }
+  });
 
   // Create title
   const title = document.createElement('H1');
@@ -677,9 +612,7 @@ const getData = async () => {
   testsChart.legend.labels.template.text = `[bold]{category}[/]:\n{value}`;
   donutChartLabel(
     testsChart,
-    `[bold]${new Intl.NumberFormat('en-CA').format(
-      tests.map((item) => item.value).reduce((a, b) => a + b)
-    )}\npeople\ntested`
+    `[bold]${new Intl.NumberFormat('en-CA').format(totalTests)}\npeople\ntested`
   );
   donutChartSeries(testsChart, 'value', 'number');
   // TESTS CHART ENDS HERE
