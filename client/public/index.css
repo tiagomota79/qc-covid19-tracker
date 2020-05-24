@@ -74,14 +74,18 @@ body {
 }
 
 #test-hosp {
-  height: 40rem;
+  height: 50rem;
   background-color: var(--background-blue);
 }
 
-#tests,
+#tests {
+  position: relative;
+  height: 55%;
+}
+
 #hosp {
   position: relative;
-  height: 50%;
+  height: 45%;
 }
 
 #death-number {
