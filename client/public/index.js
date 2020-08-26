@@ -442,7 +442,17 @@ const getData = async () => {
     'ca-numbers',
     `<div id="bignumber">${new Intl.NumberFormat('en-CA').format(
       caData.total
-    )}</div><div>confirmed cases</div>`
+    )}</div><div>confirmed cases</div><div id="smallnumber">${new Intl.NumberFormat(
+      'en-CA'
+    ).format(caData.recovered)} recovered</div>`
+  );
+  createHtmlElement(
+    '#ca-data-boxes',
+    'class',
+    'ca-numbers',
+    `<div id="bignumber">${new Intl.NumberFormat('en-CA').format(
+      caData.active
+    )}</div><div>active cases</div>`
   );
   createHtmlElement(
     '#ca-data-boxes',
@@ -474,7 +484,7 @@ const getData = async () => {
     '#footer',
     'class',
     'disclaimer',
-    'This is a personal project, it is not meant to alarm anyone or cause panic. All the data is real, collected daily from the Quebec government website. For more information on the COVID-19 spread, consult the sources above.'
+    'This is a personal project, it is not meant to alarm anyone or cause panic. All the data is real, collected daily from the both the Quebec government and the Canada government websites. For more information on the COVID-19 spread, consult the sources above.'
   );
   createHtmlElement(
     '#footer',
