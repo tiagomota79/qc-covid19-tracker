@@ -133,25 +133,32 @@ body {
 
 #ca-data-boxes {
   display: flex;
-  justify-content: space-evenly;
+  flex-direction: column;
   align-items: center;
   padding: 0.5rem 0;
 }
 
 .ca-numbers {
-  width: 25%;
+  width: 50%;
   background-color: var(--light-blue);
   padding: 0.5rem;
   height: 4rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  margin: 1%;
 }
 
 #bignumber {
   font-size: larger;
   font-weight: bold;
   color: white;
+}
+
+#smallnumber {
+  font-size: small;
+  color: white;
+  font-weight: bold;
 }
 
 #footer {
@@ -284,6 +291,27 @@ body {
 
   #ca-data {
     padding: 1rem 0;
+  }
+
+  #ca-data-boxes {
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    padding: 0.5rem 0;
+  }
+
+  .ca-numbers {
+    width: 20%;
+    background-color: var(--light-blue);
+    padding: 0.5rem;
+    height: 5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  #smallnumber {
+    font-size: smaller;
   }
 
   #footer {
